@@ -9,6 +9,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -38,9 +39,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        // Add a marker in Innsbruck and move the camera
+
+        LatLng innsbruck = new LatLng(	47.259659, 11.400375);
+        mMap.addMarker(new MarkerOptions().position(innsbruck).title("Capital of the alps!"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(innsbruck));
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(47.273466, 11.241875), 2));
+        
+        mMap.addPolyline(new PolylineOptions().geodesic(true)
+                        .add(new LatLng(47.273466, 11.241875))
+                        .add(new LatLng(47.270464, 11.256268))
+                        .add(new LatLng(47.265146, 11.274732))
+                        .add(new LatLng(47.263839, 11.315825))
+                        .add(new LatLng(47.254158, 11.359128))
+                        .add(new LatLng(47.256115, 11.381890))
+                        .add(new LatLng(47.262558, 11.384723))
+        );
     }
 }
