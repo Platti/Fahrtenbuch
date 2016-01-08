@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener {
 
@@ -20,7 +21,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         b = (Button) findViewById(R.id.karteButton);
         b.setOnClickListener(this);
-
+        b = (Button) findViewById(R.id.buttonTestDB);
+        b.setOnClickListener(this);
         // Add Test-Trip to database
 //        App.database.test();
     }
@@ -54,6 +56,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             case R.id.karteButton: {
                 Intent i = new Intent(MainActivity.this, MapsActivity.class);
                 startActivity(i);
+                break;
+            }
+            case R.id.buttonTestDB: {
+                Toast.makeText(this, "Testing database stuff...", Toast.LENGTH_SHORT).show();
+                App.database.test();
+                break;
             }
         }
     }
