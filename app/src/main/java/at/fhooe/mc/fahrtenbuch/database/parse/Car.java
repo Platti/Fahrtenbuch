@@ -21,6 +21,10 @@ public class Car extends ParseObject {
         put("admin", value);
     }
 
+    public void setAdmin(Driver driver) {
+        put("admin", driver.getUsername());
+    }
+
     public String getNFC() {
         return getString("NFC");
     }

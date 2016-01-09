@@ -15,12 +15,20 @@ public class Trip extends ParseObject {
         put("driver", value);
     }
 
+    public void setDriver(Driver driver) {
+        put("driver", driver.getUsername());
+    }
+
     public String getCar() {
         return getString("car");
     }
 
     public void setCar(String value) {
         put("car", value);
+    }
+
+    public void setCar(Car car) {
+        put("car", car.getLicensePlate());
     }
 
     public int getDistance() {

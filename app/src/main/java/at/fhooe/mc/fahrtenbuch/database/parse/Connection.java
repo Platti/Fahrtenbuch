@@ -10,9 +10,11 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import at.fhooe.mc.fahrtenbuch.database.MD5;
@@ -25,6 +27,8 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
             Parse.enableLocalDatastore(app);
             ParseObject.registerSubclass(Car.class);
             ParseObject.registerSubclass(Driver.class);
+            ParseObject.registerSubclass(DriverCarMapping.class);
+            ParseObject.registerSubclass(Trip.class);
             Parse.initialize(app, "U1UjN1fYUQhft7FVuLly4G4k0RGNY6oRfYhSqNhC", "4msv2gumPHXxQ2HmT8AqHMrXLQaONvHChw2eU951");
         } catch (IllegalStateException e) {
             // already initialized
@@ -35,34 +39,111 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
     public void test() {
         final String TAG = "TestingDatabase";
 
-        ParseQuery<Car> query = ParseQuery.getQuery(Car.class);
-        query.findInBackground(new FindCallback<Car>() {
-            @Override
-            public void done(List<Car> results, ParseException e) {
-                for (Car car : results) {
-                    Log.e(TAG, car.toString());
-                }
-            }
-        });
-
         Log.e(TAG, "Decrypted: password --- Encrypted: " + MD5.encrypt("password"));
 
         // -----------------------------------------------------------------------------------------
         // Beispiel User Login:
 
         // --> Synchrone Suche des Users: UI wird blockiert, gefundenes Driver-Objekt wird zurückgeliefert
-        Log.e(TAG, "User Login: " + loginUser("jondoe", "password").toString());
+        final Driver driver = loginUser("jondoe", "password");
+        if (driver != null) {
+            Log.e(TAG, "User Login: " + driver.toString());
+        }
 
         // --> Asynchrone Suche des Users: UI wird NICHT blockiert, Ergebnis wird in der übergebenen Callback-Methode bearbeitet
         loginUser("jondoe", "password", new GetCallback<Driver>() {
             @Override
             public void done(Driver driver, ParseException e) {
-                Log.e(TAG, "User Login: " + driver.toString());
+                if (e == null) {
+                    Log.e(TAG, "User Login: " + driver.toString());
+                } else {
+                    Log.e(TAG, "Login failed: " + e.getMessage());
+                }
             }
         });
         // -----------------------------------------------------------------------------------------
 
-        Log.e(TAG, "Testing finished!");
+        // Beispiel: Autos eines Fahrers suchen
+        // Synchron:
+        List<Car> cars = getCars(driver);
+        Log.e(TAG, "Synchronous getCars-Query:");
+        for (Car car : cars) {
+            Log.e(TAG, driver.toString() + " - " + car.toString());
+        }
+
+        // Asynchron:
+        getCars(driver, new FindCallback<Car>() {
+            @Override
+            public void done(List<Car> cars, ParseException e) {
+                if (e == null) {
+                    Log.e(TAG, "Asynchronous getCars-Query:");
+                    for (Car car : cars) {
+                        Log.e(TAG, driver.toString() + " - " + car.toString());
+                    }
+                } else {
+                    Log.e(TAG, "Query failed: " + e.getMessage());
+                }
+            }
+        });
+
+        // Beispiel: Fahrten eines Autos suchen
+        // Synchron:
+        List<Trip> trips = getTrips(cars.get(0));
+        Log.e(TAG, "Synchronous getTrips-Query:");
+        for (Trip trip : trips) {
+            Log.e(TAG, trip.toString());
+        }
+
+        // Asynchron:
+        getTrips(cars.get(0), new FindCallback<Trip>() {
+            @Override
+            public void done(List<Trip> trips, ParseException e) {
+                if (e == null) {
+                    for (Trip trip : trips) {
+                        Log.e(TAG, trip.toString());
+                    }
+                } else {
+                    Log.e(TAG, "Query failed: " + e.getMessage());
+                }
+            }
+        });
+
+        // Beispiel: Neue Fahrt speichern
+        Trip trip = new Trip();
+        trip.setCar("FR-TEST1");
+        trip.setDriver("jondoe");
+        trip.setDistance(100);
+        trip.setFeedback(100);
+        trip.setWeather("sunny");
+        JSONArray points = new JSONArray();
+        points.put(new ParseGeoPoint(47.273466, 11.241875));
+        points.put(new ParseGeoPoint(47.270464, 11.256268));
+        points.put(new ParseGeoPoint(47.265146, 11.274732));
+        points.put(new ParseGeoPoint(47.263839, 11.315825));
+        points.put(new ParseGeoPoint(47.254158, 11.359128));
+        points.put(new ParseGeoPoint(47.256115, 11.381890));
+        points.put(new ParseGeoPoint(47.262558, 11.384723));
+        trip.setGeoPoints(points);
+
+        // Synchronous
+//        if(store(trip)){
+//            Log.e(TAG, "Storing succeeded!");
+//        } else {
+//            Log.e(TAG, "Storing failed!");
+//        }
+//        Log.e(TAG, "Checkpoint after storing trip");
+
+        //Asynchronous
+//        store(trip, new SaveCallback() {
+//            @Override
+//            public void done(ParseException e) {
+//                if (e == null) {
+//                    Log.e(TAG, "Storing succeeded!");
+//                } else {
+//                    Log.e(TAG, "Storing failed: " + e.getMessage());
+//                }
+//            }
+//        });
 
 
 
@@ -98,9 +179,9 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
     @Override
     public Driver loginUser(String username, String password) {
         ParseQuery<Driver> query = ParseQuery.getQuery(Driver.class);
+        query.whereEqualTo("username", username);
+        query.whereEqualTo("password", MD5.encrypt(password));
         try {
-            query.whereEqualTo("username", username);
-            query.whereEqualTo("password", MD5.encrypt(password));
             return query.getFirst();
         } catch (ParseException e) {
             return null;
@@ -121,5 +202,88 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
         query.whereEqualTo("username", username);
         query.whereEqualTo("password", MD5.encrypt(password));
         query.getFirstInBackground(callback);
+    }
+
+    /**
+     * Get all cars linked to a driver (synchonous)
+     *
+     * @param driver driver
+     * @return list of all cars linked to the driver
+     */
+    @Override
+    public List<Car> getCars(Driver driver) {
+        ParseQuery<DriverCarMapping> queryMapping = ParseQuery.getQuery(DriverCarMapping.class);
+        queryMapping.whereEqualTo("driver", driver.getUsername());
+        ParseQuery<Car> queryCar = ParseQuery.getQuery(Car.class);
+        queryCar.whereMatchesKeyInQuery("licensePlate", "car", queryMapping);
+
+        try {
+            return queryCar.find();
+        } catch (ParseException e) {
+            Log.e("getCars(Driver): ", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Get all cars linked to a driver (asynchonous)
+     *
+     * @param driver   driver
+     * @param callback callback method to handle the result
+     */
+    @Override
+    public void getCars(Driver driver, FindCallback<Car> callback) {
+        ParseQuery<DriverCarMapping> queryMapping = ParseQuery.getQuery(DriverCarMapping.class);
+        queryMapping.whereEqualTo("driver", driver.getUsername());
+        ParseQuery<Car> queryCar = ParseQuery.getQuery(Car.class);
+        queryCar.whereMatchesKeyInQuery("licensePlate", "car", queryMapping);
+
+        queryCar.findInBackground(callback);
+    }
+
+    /**
+     * Get all trips of a car (synchronous)
+     *
+     * @param car car
+     * @return List with all trips of the car
+     */
+    @Override
+    public List<Trip> getTrips(Car car) {
+        ParseQuery<Trip> query = ParseQuery.getQuery(Trip.class);
+        query.whereEqualTo("car", car.getLicensePlate());
+        try {
+            return query.find();
+        } catch (ParseException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Get all trips of a car (asynchronous)
+     *
+     * @param car      car
+     * @param callback callback method to handle the result
+     */
+    @Override
+    public void getTrips(Car car, FindCallback<Trip> callback) {
+        ParseQuery<Trip> query = ParseQuery.getQuery(Trip.class);
+        query.whereEqualTo("car", car.getLicensePlate());
+        query.findInBackground(callback);
+    }
+
+    @Override
+    public boolean store(Trip trip) {
+        try {
+            trip.save();
+            return true;
+        } catch (ParseException e) {
+            Log.e("store(Trip)", "Storing new trip failed!");
+            return false;
+        }
+    }
+
+    @Override
+    public void store(Trip trip, SaveCallback callback) {
+        trip.saveInBackground(callback);
     }
 }
