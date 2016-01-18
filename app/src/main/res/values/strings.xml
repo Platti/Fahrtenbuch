@@ -5,4 +5,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_map">Map</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_cars_overview">CarsOverviewActivity</string>
+    <string name="title_activity_register">RegisterActivity</string>
 </resources>

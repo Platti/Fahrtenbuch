@@ -28,4 +28,7 @@ public interface Connection {
     public boolean store(Trip trip);
     public void store(Trip trip, SaveCallback callback);
 
+    public boolean registerUser(Driver driver);
+    public void registerUser(Driver driver, SaveCallback callback);
+
 }

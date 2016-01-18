@@ -49,6 +49,6 @@ public class Driver extends ParseObject {
 
     @Override
     public String toString() {
-        return getFirstName() + " " + getLastName() + " - " + getBirthday().toLocaleString();
+        return getFirstName() + " " + getLastName();
     }
 }

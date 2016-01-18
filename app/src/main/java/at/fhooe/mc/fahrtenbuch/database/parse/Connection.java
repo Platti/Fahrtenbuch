@@ -45,13 +45,13 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
         // Beispiel User Login:
 
         // --> Synchrone Suche des Users: UI wird blockiert, gefundenes Driver-Objekt wird zurückgeliefert
-        final Driver driver = loginUser("jondoe", "password");
+        final Driver driver = loginUser("jondoe", MD5.encrypt("password"));
         if (driver != null) {
             Log.e(TAG, "User Login: " + driver.toString());
         }
 
         // --> Asynchrone Suche des Users: UI wird NICHT blockiert, Ergebnis wird in der übergebenen Callback-Methode bearbeitet
-        loginUser("jondoe", "password", new GetCallback<Driver>() {
+        loginUser("jondoe", MD5.encrypt("password"), new GetCallback<Driver>() {
             @Override
             public void done(Driver driver, ParseException e) {
                 if (e == null) {
@@ -180,7 +180,7 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
     public Driver loginUser(String username, String password) {
         ParseQuery<Driver> query = ParseQuery.getQuery(Driver.class);
         query.whereEqualTo("username", username);
-        query.whereEqualTo("password", MD5.encrypt(password));
+        query.whereEqualTo("password", password);
         try {
             return query.getFirst();
         } catch (ParseException e) {
@@ -200,7 +200,7 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
         ParseQuery<Driver> query = ParseQuery.getQuery(Driver.class);
 
         query.whereEqualTo("username", username);
-        query.whereEqualTo("password", MD5.encrypt(password));
+        query.whereEqualTo("password", password);
         query.getFirstInBackground(callback);
     }
 
@@ -271,6 +271,12 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
         query.findInBackground(callback);
     }
 
+    /**
+     * Store new trip (synchronous)
+     *
+     * @param trip new trip
+     * @return true ok, false error
+     */
     @Override
     public boolean store(Trip trip) {
         try {
@@ -282,8 +288,54 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
         }
     }
 
+    /**
+     * Store new trip (asynchronous)
+     *
+     * @param trip     new trip
+     * @param callback callback method to handle the result
+     */
     @Override
     public void store(Trip trip, SaveCallback callback) {
         trip.saveInBackground(callback);
+    }
+
+    /**
+     * Register new user (synchronous)
+     *
+     * @param driver new user
+     * @return true ok, false error
+     */
+    @Override
+    public boolean registerUser(Driver driver) {
+        ParseQuery<Driver> query = ParseQuery.getQuery(Driver.class);
+        query.whereEqualTo("username", driver.getUsername());
+        try {
+            if (query.getFirst() == null) {
+                driver.save();
+                return true;
+            } else {
+                return false;
+            }
+        } catch (ParseException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void registerUser(final Driver newDriver, final SaveCallback callback) {
+        ParseQuery<Driver> query = ParseQuery.getQuery(Driver.class);
+        query.whereEqualTo("username", newDriver.getUsername());
+        query.getFirstInBackground(new GetCallback<Driver>() {
+            @Override
+            public void done(Driver driver, ParseException e) {
+                if (e == null && driver != null) {
+                    callback.done(new ParseException(ParseException.USERNAME_TAKEN, "username already taken"));
+                } else if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
+                    newDriver.saveInBackground(callback);
+                } else {
+                    callback.done(e);
+                }
+            }
+        });
     }
 }
