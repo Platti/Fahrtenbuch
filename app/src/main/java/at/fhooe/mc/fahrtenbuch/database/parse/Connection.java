@@ -65,11 +65,11 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
 
         // Beispiel: Autos eines Fahrers suchen
         // Synchron:
-        List<Car> cars = getCars(driver);
-        Log.e(TAG, "Synchronous getCars-Query:");
-        for (Car car : cars) {
-            Log.e(TAG, driver.toString() + " - " + car.toString());
-        }
+//        List<Car> cars = getCars(driver);
+//        Log.e(TAG, "Synchronous getCars-Query:");
+//        for (Car car : cars) {
+//            Log.e(TAG, driver.toString() + " - " + car.toString());
+//        }
 
         // Asynchron:
         getCars(driver, new FindCallback<Car>() {
@@ -79,6 +79,10 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
                     Log.e(TAG, "Asynchronous getCars-Query:");
                     for (Car car : cars) {
                         Log.e(TAG, driver.toString() + " - " + car.toString());
+                        Log.e(TAG, "Car has NFC: " + car.hasNFC());
+                        if(car.hasNFC()){
+                            Log.e(TAG, "NFC-TAG: #" + car.getNFC()+ "#");
+                        }
                     }
                 } else {
                     Log.e(TAG, "Query failed: " + e.getMessage());
@@ -88,25 +92,25 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
 
         // Beispiel: Fahrten eines Autos suchen
         // Synchron:
-        List<Trip> trips = getTrips(cars.get(0));
-        Log.e(TAG, "Synchronous getTrips-Query:");
-        for (Trip trip : trips) {
-            Log.e(TAG, trip.toString());
-        }
+//        List<Trip> trips = getTrips(cars.get(0));
+//        Log.e(TAG, "Synchronous getTrips-Query:");
+//        for (Trip trip : trips) {
+//            Log.e(TAG, trip.toString());
+//        }
 
         // Asynchron:
-        getTrips(cars.get(0), new FindCallback<Trip>() {
-            @Override
-            public void done(List<Trip> trips, ParseException e) {
-                if (e == null) {
-                    for (Trip trip : trips) {
-                        Log.e(TAG, trip.toString());
-                    }
-                } else {
-                    Log.e(TAG, "Query failed: " + e.getMessage());
-                }
-            }
-        });
+//        getTrips(cars.get(0), new FindCallback<Trip>() {
+//            @Override
+//            public void done(List<Trip> trips, ParseException e) {
+//                if (e == null) {
+//                    for (Trip trip : trips) {
+//                        Log.e(TAG, trip.toString());
+//                    }
+//                } else {
+//                    Log.e(TAG, "Query failed: " + e.getMessage());
+//                }
+//            }
+//        });
 
         // Beispiel: Neue Fahrt speichern
         Trip trip = new Trip();

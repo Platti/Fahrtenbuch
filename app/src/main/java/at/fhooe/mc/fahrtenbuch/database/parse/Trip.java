@@ -5,6 +5,8 @@ import com.parse.ParseObject;
 
 import org.json.JSONArray;
 
+import java.util.Date;
+
 @ParseClassName("Trip")
 public class Trip extends ParseObject {
     public String getDriver() {
@@ -37,6 +39,22 @@ public class Trip extends ParseObject {
 
     public void setDistance(int value) {
         put("distance", value);
+    }
+
+    public Date getStartTime() {
+        return getDate("startTime");
+    }
+
+    public void setStartTime(Date value) {
+        put("startTime", value);
+    }
+
+    public Date getStopTime() {
+        return getDate("stopTime");
+    }
+
+    public void setStopTime(Date value) {
+        put("stopTime", value);
     }
 
     public String getWeather() {

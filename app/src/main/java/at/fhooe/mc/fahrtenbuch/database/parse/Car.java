@@ -17,12 +17,20 @@ public class Car extends ParseObject {
         return getString("admin");
     }
 
+    public boolean isAdmin(Driver driver) {
+        return driver.getUsername().equals(getAdmin());
+    }
+
     public void setAdmin(String value) {
         put("admin", value);
     }
 
     public void setAdmin(Driver driver) {
         put("admin", driver.getUsername());
+    }
+
+    public boolean hasNFC() {
+        return (getString("NFC") != null && !getString("NFC").equals(""));
     }
 
     public String getNFC() {
@@ -49,8 +57,20 @@ public class Car extends ParseObject {
         put("model", value);
     }
 
+    public int getMileage() {
+        return getInt("mileage");
+    }
+
+    public void setMileage(int value) {
+        put("mileage", value);
+    }
+
+    public void addMileage(int value) {
+        put("mileage", getMileage() + value);
+    }
+
     @Override
     public String toString() {
-        return getLicensePlate() + ": " + getMake() + " " + getModel() + " (" + getAdmin() + ")";
+        return getLicensePlate() + ": " + getMake() + " " + getModel() + " (" + getAdmin() + ")" + " " + getMileage() + "km";
     }
 }

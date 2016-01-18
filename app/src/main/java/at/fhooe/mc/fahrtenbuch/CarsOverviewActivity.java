@@ -45,6 +45,8 @@ public class CarsOverviewActivity extends ActionBarActivity {
             startActivity(i);
             finish();
             return true;
+        } else if (id == R.id.action_test) {
+            App.database.test();
         }
 
         return super.onOptionsItemSelected(item);
