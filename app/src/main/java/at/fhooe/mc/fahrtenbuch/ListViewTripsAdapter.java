@@ -1,0 +1,81 @@
+package at.fhooe.mc.fahrtenbuch;
+
+import android.app.Activity;
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.parse.ParseGeoPoint;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
+
+public class ListViewTripsAdapter extends ArrayAdapter<Trip> {
+    public Activity mActivity;
+
+    public ListViewTripsAdapter(Context context) {
+        super(context, -1);
+    }
+
+    @Override
+    public View getView(int _pos, View _view, ViewGroup _parent) {
+        if (_view == null) {
+            Context c = getContext();
+            LayoutInflater inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            _view = inflater.inflate(R.layout.list_trips, null);
+        }
+
+        final Trip trip = getItem(_pos);
+
+        TextView tv = (TextView) _view.findViewById(R.id.trip_date);
+        tv.setText(trip.getCreatedAt().toLocaleString().split(" ")[0]);
+
+        tv = (TextView) _view.findViewById(R.id.trip_driver);
+        tv.setText(trip.getDriver());
+
+        tv = (TextView) _view.findViewById(R.id.trip_distance);
+        tv.setText(trip.getDistance() + " km");
+
+        final View view = _view;
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                List<ParseGeoPoint> geoPoints = trip.getGeoPoints();
+                final String firstCity = trip.getFirstCity(getContext());
+                final String lastCity = trip.getLastCity(getContext());
+
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView tv = (TextView) view.findViewById(R.id.trip_start);
+                        tv.setText(firstCity);
+                        tv = (TextView) view.findViewById(R.id.trip_stop);
+                        tv.setText(lastCity);
+//                        TripsOverviewActivity.mLoadingStatus.remove(trip);
+                        Log.e("LoadingStatus", "LoadingStatus: "+ TripsOverviewActivity.mLoadingStatus.remove(trip) + " " + TripsOverviewActivity.mLoadingStatus.size());
+                        if (TripsOverviewActivity.mLoadingStatus.size() == 0) {
+//                            TripsOverviewActivity.mLoadingSpinner.setVisibility(View.GONE);
+                            TripsOverviewActivity.mLoadingDialog.dismiss();
+                        }
+                    }
+                });
+
+                return null;
+            }
+        };
+        task.execute();
+        return _view;
+    }
+
+}

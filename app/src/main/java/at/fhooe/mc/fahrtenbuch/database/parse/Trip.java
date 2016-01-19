@@ -1,14 +1,34 @@
 package at.fhooe.mc.fahrtenbuch.database.parse;
 
+import android.app.Activity;
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+
 import com.parse.ParseClassName;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import at.fhooe.mc.fahrtenbuch.R;
 
 @ParseClassName("Trip")
 public class Trip extends ParseObject {
+    private String firstCity, lastCity;
+    private List<ParseGeoPoint> geoPoints;
+
     public String getDriver() {
         return getString("driver");
     }
@@ -73,11 +93,59 @@ public class Trip extends ParseObject {
         put("feedback", value);
     }
 
-    public JSONArray getGeoPoints() {
-        return getJSONArray("geoPoints");
+    public List<ParseGeoPoint> getGeoPoints() {
+        if (geoPoints == null) {
+            geoPoints = new ArrayList<>();
+            try {
+                JSONArray array = getJSONArray("geoPoints");
+                for (int i = 0; i < array.length(); i++) {
+                    geoPoints.add(new ParseGeoPoint(array.getJSONObject(i).getDouble("latitude"), array.getJSONObject(i).getDouble("longitude")));
+                }
+            } catch (JSONException e) {
+                Log.e("Trip.getGeoPoints", e.getMessage());
+            } catch (NullPointerException e) {
+                Log.e("Trip.getGeoPoints", "no GeoPoints stored for this trip");
+            }
+        }
+        return geoPoints;
+    }
+
+    public String getFirstCity(Context _context) {
+        if (firstCity == null) {
+            int i = 0;
+            while (firstCity == null && i < getGeoPoints().size()) {
+                firstCity = getCity(getGeoPoints().get(i), _context);
+                i++;
+            }
+        }
+        return firstCity == null ? "unknown" : firstCity;
+    }
+
+    public String getLastCity(Context _context) {
+        if (lastCity == null) {
+            int i = getGeoPoints().size() - 1;
+            while (lastCity == null && i >= 0) {
+                lastCity = getCity(getGeoPoints().get(i), _context);
+                i--;
+            }
+        }
+        return lastCity == null ? "unknown" : lastCity;
     }
 
     public void setGeoPoints(JSONArray value) {
         put("geoPoints", value);
+    }
+
+    private String getCity(ParseGeoPoint geoPoint, Context _context) {
+        try {
+            Geocoder gcd = new Geocoder(_context, Locale.getDefault());
+            List<Address> addresses = gcd.getFromLocation(geoPoint.getLatitude(), geoPoint.getLongitude(), 1);
+            if (addresses.size() > 0) {
+                return addresses.get(0).getLocality();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -45,8 +45,12 @@ public class CarsOverviewActivity extends ActionBarActivity {
             startActivity(i);
             finish();
             return true;
-        } else if (id == R.id.action_test) {
+        } else if (id == R.id.action_test1) {
             App.database.test();
+        } else if (id == R.id.action_test2) {
+            App.car = App.database.getCars(App.driver).get(0); // TODO: zum testen synchron, daher verzögerung bei click auf menu
+            Intent i = new Intent(CarsOverviewActivity.this, TripsOverviewActivity.class);
+            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
