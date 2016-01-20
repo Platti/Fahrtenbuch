@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import at.fhooe.mc.fahrtenbuch.database.MD5;
+import at.fhooe.mc.fahrtenbuch.database.Weather;
 
 public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
     @Override
@@ -118,7 +119,7 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
         trip.setDriver("jondoe");
         trip.setDistance(100);
         trip.setFeedback(100);
-        trip.setWeather("sunny");
+        trip.setWeather(new Weather("01d", "sunny"));
         JSONArray points = new JSONArray();
         points.put(new ParseGeoPoint(47.273466, 11.241875));
         points.put(new ParseGeoPoint(47.270464, 11.256268));

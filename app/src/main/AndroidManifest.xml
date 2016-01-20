@@ -84,6 +84,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="at.fhooe.mc.fahrtenbuch.CarsOverviewActivity" />
         </activity>
+        <activity
+            android:name=".TripDetailsActivity"
+            android:label="@string/title_activity_trip_details"
+            android:parentActivityName=".TripsOverviewActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="at.fhooe.mc.fahrtenbuch.TripsOverviewActivity" />
+        </activity>
     </application>
 
 </manifest>

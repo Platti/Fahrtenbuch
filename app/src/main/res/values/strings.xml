@@ -9,4 +9,5 @@
     <string name="title_activity_cars_overview">CarsOverviewActivity</string>
     <string name="title_activity_register">RegisterActivity</string>
     <string name="title_activity_trips_overview">TripsOverviewActivity</string>
+    <string name="title_activity_trip_details">TripDetailsActivity</string>
 </resources>

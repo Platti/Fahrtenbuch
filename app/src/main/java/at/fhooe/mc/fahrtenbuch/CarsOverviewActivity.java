@@ -39,7 +39,7 @@ public class CarsOverviewActivity extends ActionBarActivity {
             SharedPreferences.Editor editor = sp.edit();
             editor.putString(App.SP_LAST_LOGIN_USERNAME, null);
             editor.putString(App.SP_LAST_LOGIN_PASSWORD, null);
-            editor.commit();
+            editor.apply();
             // close activity and show login activity
             Intent i = new Intent(CarsOverviewActivity.this, LoginActivity.class);
             startActivity(i);
