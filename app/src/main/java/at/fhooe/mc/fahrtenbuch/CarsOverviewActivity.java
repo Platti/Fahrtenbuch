@@ -51,6 +51,9 @@ public class CarsOverviewActivity extends ActionBarActivity {
             App.car = App.database.getCars(App.driver).get(0); // TODO: zum testen synchron, daher verzögerung bei click auf menu
             Intent i = new Intent(CarsOverviewActivity.this, TripsOverviewActivity.class);
             startActivity(i);
+        } else if (id == R.id.action_testMap) {
+            Intent i = new Intent(CarsOverviewActivity.this, MapsActivity.class);
+            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
