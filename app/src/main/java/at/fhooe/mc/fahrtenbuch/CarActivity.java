@@ -1,57 +1,22 @@
 package at.fhooe.mc.fahrtenbuch;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
-import com.parse.FindCallback;
-import com.parse.ParseException;
+import at.fhooe.mc.fahrtenbuch.R;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import at.fhooe.mc.fahrtenbuch.database.parse.Car;
-import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
-
-public class CarsOverviewActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
-
-    public static List<Car> mCarList;
-    public static ProgressDialog mLoadingDialog;
+public class CarActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cars_overview);
-        App.car = null;
-
-
-        mCarList = new ArrayList<>();
-
-        final ListView listView = (ListView) findViewById(R.id.list_view_cars);
-        final ListViewCarsAdapter adapter = new ListViewCarsAdapter(getBaseContext());
-        adapter.mActivity = this;
-        App.database.getCars(App.driver, new FindCallback<Car>() {
-            @Override
-            public void done(List<Car> cars, ParseException e) {
-                if (e == null) {
-                    for (Car car : cars) {
-                        adapter.add(car);
-                        mCarList.add(car);
-                    }
-                }
-            }
-        });
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(this);
+        setContentView(R.layout.activity_car);
+        setTitle(App.car.getMake() + " " + App.car.getModel());
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -78,7 +43,7 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
             editor.putString(App.SP_LAST_LOGIN_PASSWORD, null);
             editor.commit();
             // close activity and show login activity
-            Intent i = new Intent(CarsOverviewActivity.this, LoginActivity.class);
+            Intent i = new Intent(CarActivity.this, LoginActivity.class);
             startActivity(i);
             finish();
             return true;
@@ -86,17 +51,12 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
             App.database.test();
         } else if (id == R.id.action_test2) {
             App.car = App.database.getCars(App.driver).get(0); // TODO: zum testen synchron, daher verzögerung bei click auf menu
-            Intent i = new Intent(CarsOverviewActivity.this, TripsOverviewActivity.class);
+            Intent i = new Intent(CarActivity.this, TripsOverviewActivity.class);
             startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-        App.car = (Car) parent.getAdapter().getItem(pos);
-        Intent i = new Intent(CarsOverviewActivity.this, CarActivity.class);
-        startActivity(i);
-    }
+
 }
