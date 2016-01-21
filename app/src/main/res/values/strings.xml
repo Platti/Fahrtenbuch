@@ -9,12 +9,9 @@
     <string name="title_activity_cars_overview">Select Car</string>
     <string name="title_activity_register">RegisterActivity</string>
     <string name="title_activity_trips_overview">TripsOverviewActivity</string>
-<<<<<<< HEAD
     <string name="nfc_activate_button">connect to car with NFC</string>
     <string name="title_activity_car">CarActivity</string>
     <string name="button_start_ride">Start Ride</string>
     <string name="button_show_rides">Show Rides</string>
-=======
     <string name="title_activity_trip_details">TripDetailsActivity</string>
->>>>>>> origin/master
 </resources>
