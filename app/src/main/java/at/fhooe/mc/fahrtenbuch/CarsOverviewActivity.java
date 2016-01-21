@@ -76,7 +76,7 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
             SharedPreferences.Editor editor = sp.edit();
             editor.putString(App.SP_LAST_LOGIN_USERNAME, null);
             editor.putString(App.SP_LAST_LOGIN_PASSWORD, null);
-            editor.commit();
+            editor.apply();
             // close activity and show login activity
             Intent i = new Intent(CarsOverviewActivity.this, LoginActivity.class);
             startActivity(i);
@@ -87,6 +87,9 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
         } else if (id == R.id.action_test2) {
             App.car = App.database.getCars(App.driver).get(0); // TODO: zum testen synchron, daher verzögerung bei click auf menu
             Intent i = new Intent(CarsOverviewActivity.this, TripsOverviewActivity.class);
+            startActivity(i);
+        } else if (id == R.id.action_testMap) {
+            Intent i = new Intent(CarsOverviewActivity.this, MapsActivity.class);
             startActivity(i);
         }
 

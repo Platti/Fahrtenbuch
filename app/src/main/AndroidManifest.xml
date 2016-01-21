@@ -85,11 +85,20 @@
                 android:value="at.fhooe.mc.fahrtenbuch.CarsOverviewActivity" />
         </activity>
         <activity
+<<<<<<< HEAD
             android:name=".CarActivity"
             android:label="@string/title_activity_car" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="at.fhooe.mc.fahrtenbuch.CarsOverviewActivity" />
+=======
+            android:name=".TripDetailsActivity"
+            android:label="@string/title_activity_trip_details"
+            android:parentActivityName=".TripsOverviewActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="at.fhooe.mc.fahrtenbuch.TripsOverviewActivity" />
+>>>>>>> origin/master
         </activity>
     </application>
 

@@ -4,6 +4,9 @@ import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -16,10 +19,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MapsActivity extends FragmentActivity implements
-        OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, View.OnClickListener {
 
     private static final String TAG = "MyActivity";
     private GoogleMap mMap;
@@ -27,11 +34,21 @@ public class MapsActivity extends FragmentActivity implements
     private Location mLastLocation;
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
+    private List<LatLng> mPointList = new ArrayList<>();
+    private boolean mTripStarted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        Button b = null;
+
+        b = (Button) findViewById(R.id.stop_button);
+        b.setOnClickListener(this);
+        b.setText("Start");
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -75,23 +92,27 @@ public class MapsActivity extends FragmentActivity implements
         mMap = googleMap;
 
         // Add a marker in Innsbruck and move the camera
-
-        LatLng innsbruck = new LatLng(	47.259659, 11.400375);
+        LatLng innsbruck = new LatLng(47.259659, 11.400375);
         mMap.addMarker(new MarkerOptions().position(innsbruck).title("Capital of the alps!"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(innsbruck));
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(47.273466, 11.241875), 2));
+        mPointList.add(new LatLng(47.273466, 11.241875));
+        mPointList.add(new LatLng(47.270464, 11.256268));
+        mPointList.add(new LatLng(47.265146, 11.274732));
+        mPointList.add(new LatLng(47.263839, 11.315825));
+        mPointList.add(new LatLng(47.254158, 11.359128));
+        mPointList.add(new LatLng(47.256115, 11.381890));
+        mPointList.add(new LatLng(47.262558, 11.384723));
 
-        mMap.addPolyline(new PolylineOptions().geodesic(true)
-                        .add(new LatLng(47.273466, 11.241875))
-                        .add(new LatLng(47.270464, 11.256268))
-                        .add(new LatLng(47.265146, 11.274732))
-                        .add(new LatLng(47.263839, 11.315825))
-                        .add(new LatLng(47.254158, 11.359128))
-                        .add(new LatLng(47.256115, 11.381890))
-                        .add(new LatLng(47.262558, 11.384723))
-        );
+//        mMap.addPolyline(new PolylineOptions().geodesic(true)
+//                        .add(new LatLng(47.273466, 11.241875))
+//                        .add(new LatLng(47.270464, 11.256268))
+//                        .add(new LatLng(47.265146, 11.274732))
+//                        .add(new LatLng(47.263839, 11.315825))
+//                        .add(new LatLng(47.254158, 11.359128))
+//                        .add(new LatLng(47.256115, 11.381890))
+//                        .add(new LatLng(47.262558, 11.384723))
+//        );
     }
 
     @Override
@@ -103,7 +124,7 @@ public class MapsActivity extends FragmentActivity implements
             Log.v(TAG, "Long: " + String.valueOf(mLastLocation.getLongitude()) + " Lat: " + String.valueOf(mLastLocation.getLatitude()));
         }
 
-        startLocationUpdates();
+//        startLocationUpdates();
     }
 
     protected void startLocationUpdates() {
@@ -136,5 +157,79 @@ public class MapsActivity extends FragmentActivity implements
 
     private void updateUI() {
         Log.v(TAG, "Long: " + String.valueOf(mCurrentLocation.getLongitude()) + " Lat: " + String.valueOf(mCurrentLocation.getLatitude()));
+
+        LatLng currentPoint = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPoint, 10));
+
+        mMap.addMarker(new MarkerOptions().position(currentPoint));
+        mPointList.add(currentPoint);
+
+        int distance = 0;
+        Location loc1 = new Location("loc1");
+        Location loc2 = new Location("loc2");
+
+        for (int i = 0; i < mPointList.size() - 1; i++) {
+            LatLng src = mPointList.get(i);
+            LatLng dest = mPointList.get(i + 1);
+
+            loc1.setLatitude(mPointList.get(i).latitude);
+            loc1.setLongitude(mPointList.get(i).longitude);
+
+            loc2.setLatitude(mPointList.get(i + 1).latitude);
+            loc2.setLongitude(mPointList.get(i + 1).longitude);
+
+            distance += loc1.distanceTo(loc2);
+            Log.d("Fahrtenbuch", String.valueOf(distance));
+
+            // mMap is the Map Object
+            Polyline line = mMap.addPolyline(
+                    new PolylineOptions().add(
+                            new LatLng(src.latitude, src.longitude),
+                            new LatLng(dest.latitude,dest.longitude)
+                    )
+            );
+        }
+
+        distance = distance/1000;
+
+        TextView dist = (TextView)findViewById(R.id.textView_distance);
+        dist.setText(String.valueOf(distance) + " km");
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.stop_button: {
+                if (!mTripStarted) {
+                    Button b = (Button) findViewById(R.id.stop_button);
+                    b.setText("Stop");
+                    startLocationUpdates();
+                } else {
+                    saveTrip();
+                }
+
+                break;
+            }
+        }
+    }
+
+    private void saveTrip() {
+        Log.d("Fahrtenbuch", "SAVE!");
+
+//        double distance = 0;
+//        Location loc1 = new Location("loc1");
+//        Location loc2 = new Location("loc2");
+//
+//        for (int i = 0; i<mPointList.size()-1;i++) {
+//            loc1.setLatitude(mPointList.get(i).latitude);
+//            loc1.setLongitude(mPointList.get(i).longitude);
+//
+//            loc2.setLatitude(mPointList.get(i + 1).latitude);
+//            loc2.setLongitude(mPointList.get(i + 1).longitude);
+//
+//            distance += loc1.distanceTo(loc2);
+//            Log.d("Fahrtenbuch", String.valueOf(distance));
+//        }
     }
 }

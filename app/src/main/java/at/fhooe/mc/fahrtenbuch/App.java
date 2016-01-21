@@ -4,6 +4,7 @@ import android.app.Application;
 import at.fhooe.mc.fahrtenbuch.database.Connection;
 import at.fhooe.mc.fahrtenbuch.database.parse.Car;
 import at.fhooe.mc.fahrtenbuch.database.parse.Driver;
+import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
 
 public class App extends Application {
 
@@ -13,6 +14,7 @@ public class App extends Application {
     public static Connection database;
     public static Driver driver;
     public static Car car;
+    public static Trip trip;
 
 
     @Override

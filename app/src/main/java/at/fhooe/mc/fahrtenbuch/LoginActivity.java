@@ -67,7 +67,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Vie
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putString(App.SP_LAST_LOGIN_USERNAME, _username);
                     editor.putString(App.SP_LAST_LOGIN_PASSWORD, _password);
-                    editor.commit();
+                    editor.apply();
                     // Open Cars Overview
                     Toast.makeText(getBaseContext(), "Hello " + driver.toString() + "!", Toast.LENGTH_LONG).show();
                     Intent i = new Intent(LoginActivity.this, CarsOverviewActivity.class);

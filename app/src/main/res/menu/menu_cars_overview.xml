@@ -16,8 +16,14 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_test2"
-        android:title="Test Trips Overview"
+    android:id="@+id/action_test2"
+    android:title="Test Trips Overview"
+    android:orderInCategory="100"
+    app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_testMap"
+        android:title="Test Maps"
         android:orderInCategory="100"
         app:showAsAction="never" />
 </menu>

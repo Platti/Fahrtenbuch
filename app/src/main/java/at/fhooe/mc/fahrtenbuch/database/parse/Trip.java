@@ -1,13 +1,9 @@
 package at.fhooe.mc.fahrtenbuch.database.parse;
 
-import android.app.Activity;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
 
 import com.parse.ParseClassName;
 import com.parse.ParseGeoPoint;
@@ -22,12 +18,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import at.fhooe.mc.fahrtenbuch.R;
+import at.fhooe.mc.fahrtenbuch.database.Weather;
 
 @ParseClassName("Trip")
 public class Trip extends ParseObject {
     private String firstCity, lastCity;
     private List<ParseGeoPoint> geoPoints;
+    private Weather weather;
 
     public String getDriver() {
         return getString("driver");
@@ -77,12 +74,17 @@ public class Trip extends ParseObject {
         put("stopTime", value);
     }
 
-    public String getWeather() {
-        return getString("weather");
+    public Weather getWeather() {
+        if (weather == null) {
+            weather = new Weather(getString("weatherCode"), getString("weatherDescription"));
+        }
+        return weather;
     }
 
-    public void setWeather(String value) {
-        put("weather", value);
+    public void setWeather(Weather value) {
+        weather = value;
+        put("weatherCode", value.getCode());
+        put("weatherDescription", value.getDescription());
     }
 
     public int getFeedback() {
@@ -118,7 +120,7 @@ public class Trip extends ParseObject {
                 i++;
             }
         }
-        return firstCity == null ? "unknown" : firstCity;
+        return firstCity == null ? "---" : firstCity;
     }
 
     public String getLastCity(Context _context) {
@@ -129,7 +131,7 @@ public class Trip extends ParseObject {
                 i--;
             }
         }
-        return lastCity == null ? "unknown" : lastCity;
+        return lastCity == null ? "---" : lastCity;
     }
 
     public void setGeoPoints(JSONArray value) {
