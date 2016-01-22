@@ -89,6 +89,7 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
             Intent i = new Intent(CarsOverviewActivity.this, TripsOverviewActivity.class);
             startActivity(i);
         } else if (id == R.id.action_testMap) {
+            App.car = App.database.getCars(App.driver).get(0);
             Intent i = new Intent(CarsOverviewActivity.this, MapsActivity.class);
             startActivity(i);
         }
