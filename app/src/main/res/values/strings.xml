@@ -14,4 +14,12 @@
     <string name="button_start_ride">Start Ride</string>
     <string name="button_show_rides">Show Rides</string>
     <string name="title_activity_trip_details">TripDetailsActivity</string>
+    <string name="title_activity_car_add">Add Car</string>
+    <string name="textfield_make">Make</string>
+    <string name="textfield_modell">Modell</string>
+    <string name="textfield_number">Number Plate</string>
+    <string name="textfield_kilometer">current mileage</string>
+    <string name="textview_add_user">+ Add new User ...</string>
+    <string name="header_entitledUser">Entitled User</string>
+    <string name="button_nfc">add NFC-tag</string>
 </resources>

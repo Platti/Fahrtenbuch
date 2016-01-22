@@ -79,12 +79,11 @@
         <activity
             android:name=".TripsOverviewActivity"
             android:label="@string/title_activity_trips_overview"
-            android:parentActivityName=".CarsOverviewActivity" >
+            android:parentActivityName=".CarActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="at.fhooe.mc.fahrtenbuch.CarsOverviewActivity" />
+                android:value="at.fhooe.mc.fahrtenbuch.CarActivity" />
         </activity>
-
         <activity
             android:name=".CarActivity"
             android:label="@string/title_activity_car" >
@@ -99,6 +98,13 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="at.fhooe.mc.fahrtenbuch.TripsOverviewActivity" />
+        </activity>
+        <activity
+            android:name=".CarAddActivity"
+            android:label="@string/title_activity_car_add" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="at.fhooe.mc.fahrtenbuch.CarActivity" />
         </activity>
     </application>
 
