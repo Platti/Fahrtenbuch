@@ -139,16 +139,16 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
 //        Log.e(TAG, "Checkpoint after storing trip");
 
         //Asynchronous
-//        store(trip, new SaveCallback() {
-//            @Override
-//            public void done(ParseException e) {
-//                if (e == null) {
-//                    Log.e(TAG, "Storing succeeded!");
-//                } else {
-//                    Log.e(TAG, "Storing failed: " + e.getMessage());
-//                }
-//            }
-//        });
+        store(trip, new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.e(TAG, "Storing succeeded!");
+                } else {
+                    Log.e(TAG, "Storing failed: " + e.getMessage());
+                }
+            }
+        });
 
 
 
