@@ -14,4 +14,5 @@
     <string name="button_start_ride">Start Ride</string>
     <string name="button_show_rides">Show Rides</string>
     <string name="title_activity_trip_details">TripDetailsActivity</string>
+    <string name="title_activity_feedback">FeedbackActivity</string>
 </resources>
