@@ -81,8 +81,8 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
                     for (Car car : cars) {
                         Log.e(TAG, driver.toString() + " - " + car.toString());
                         Log.e(TAG, "Car has NFC: " + car.hasNFC());
-                        if(car.hasNFC()){
-                            Log.e(TAG, "NFC-TAG: #" + car.getNFC()+ "#");
+                        if (car.hasNFC()) {
+                            Log.e(TAG, "NFC-TAG: #" + car.getNFC() + "#");
                         }
                     }
                 } else {
@@ -342,5 +342,48 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
                 }
             }
         });
+    }
+
+    /**
+     * Add new car to the database
+     *
+     * @param newCar    car object to save, license plate and admin have to be set!
+     * @param callback  callback method: done(ParseException e)
+     *                      possible ParseExceptions:   MISSING_OBJECT_ID (license plate or admin is missing)
+     *                                                  DUPLICATE_VALUE (license plate already taken)
+     *                                                  CONNECTION_FAILED (no internet connection)
+     */
+    @Override
+    public void addCar(final Car newCar, final SaveCallback callback) {
+        if (newCar.getLicensePlate() == null || newCar.getAdmin() == null) {
+            callback.done(new ParseException(ParseException.MISSING_OBJECT_ID, "missing license plate or admin"));
+        } else {
+            ParseQuery<Car> query = ParseQuery.getQuery(Car.class);
+            query.whereEqualTo("licensePlate", newCar.getLicensePlate());
+            query.getFirstInBackground(new GetCallback<Car>() {
+                @Override
+                public void done(Car car, ParseException e) {
+                    if (e == null && car != null) {
+                        callback.done(new ParseException(ParseException.DUPLICATE_VALUE, "license plate already taken"));
+                    } else if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
+                        newCar.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    DriverCarMapping mapping = new DriverCarMapping();
+                                    mapping.setCar(newCar);
+                                    mapping.setDriver(newCar.getAdmin());
+                                    mapping.saveInBackground(callback);
+                                } else {
+                                    callback.done(e);
+                                }
+                            }
+                        });
+                    } else {
+                        callback.done(e);
+                    }
+                }
+            });
+        }
     }
 }

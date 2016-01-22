@@ -31,4 +31,6 @@ public interface Connection {
     public boolean registerUser(Driver driver);
     public void registerUser(Driver driver, SaveCallback callback);
 
+    public void addCar(Car car, SaveCallback callback);
+
 }

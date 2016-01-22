@@ -6,16 +6,26 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import at.fhooe.mc.fahrtenbuch.R;
 
-public class CarActivity extends ActionBarActivity {
+public class CarActivity extends ActionBarActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_car);
         setTitle(App.car.getMake() + " " + App.car.getModel());
+
+        Button button = (Button) findViewById(R.id.button_start_ride);
+        button.setOnClickListener(this);
+        button = (Button) findViewById(R.id.button_show_rides);
+        button.setOnClickListener(this);
+        button = (Button) findViewById(R.id.button_car_settings);
+        button.setOnClickListener(this);
+
     }
 
     @Override
@@ -59,4 +69,22 @@ public class CarActivity extends ActionBarActivity {
     }
 
 
+    @Override
+    public void onClick(View view) {
+        Intent i;
+        switch (view.getId()){
+            case R.id.button_start_ride:
+                i = new Intent(CarActivity.this, MapsActivity.class);
+                startActivity(i);
+                break;
+            case R.id.button_show_rides:
+                i = new Intent(CarActivity.this, TripsOverviewActivity.class);
+                startActivity(i);
+                break;
+            case R.id.button_car_settings:
+                i = new Intent(CarActivity.this, CarAddActivity.class);
+                startActivity(i);
+                break;
+        }
+    }
 }
