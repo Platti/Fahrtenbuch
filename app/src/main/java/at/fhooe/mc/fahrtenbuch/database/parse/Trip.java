@@ -150,4 +150,12 @@ public class Trip extends ParseObject {
         }
         return null;
     }
+
+    public void setDescription(String value) {
+        put("description", value);
+    }
+
+    public String getDescription(){
+        return getString("description");
+    }
 }
