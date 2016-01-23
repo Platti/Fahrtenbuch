@@ -1,6 +1,7 @@
 package at.fhooe.mc.fahrtenbuch;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
@@ -14,8 +15,6 @@ import android.widget.Toast;
 
 import com.parse.ParseException;
 import com.parse.SaveCallback;
-
-import org.w3c.dom.Text;
 
 import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
 
@@ -43,7 +42,12 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
 
         Button q = null;
         q = (Button) findViewById(R.id.button_saveTrip);
-        b.setOnClickListener(this);
+        q.setOnClickListener(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        //disable back button
     }
 
     @Override
@@ -103,6 +107,9 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
                         }
                     }
                 });
+
+                Intent i = new Intent(FeedbackActivity.this, CarActivity.class);
+                startActivity(i);
 
                 break;
             }
