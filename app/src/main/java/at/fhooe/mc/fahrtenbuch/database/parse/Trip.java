@@ -58,6 +58,15 @@ public class Trip extends ParseObject {
         put("distance", value);
     }
 
+    public void setDistance() {
+        double distance = 0;
+        List<ParseGeoPoint> geoPoints = getGeoPoints();
+        for (int i = 0; i < geoPoints.size() - 1; i++) {
+            distance += geoPoints.get(i).distanceInKilometersTo(geoPoints.get(i + 1));
+        }
+        setDistance((int) distance);
+    }
+
     public Date getStartTime() {
         return getDate("startTime");
     }
@@ -155,7 +164,7 @@ public class Trip extends ParseObject {
         put("description", value);
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return getString("description");
     }
 }
