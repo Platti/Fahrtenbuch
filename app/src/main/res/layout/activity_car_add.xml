@@ -25,9 +25,10 @@
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:id="@+id/imageView2"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@mipmap/ic_launcher"
+                android:layout_margin="5dp" />
 
             <LinearLayout
                 android:orientation="vertical"
@@ -44,7 +45,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/textfield_modell"
+                    android:id="@+id/textfield_model"
                     android:layout_gravity="left|center_vertical"
                     android:hint="@string/textfield_modell" />
             </LinearLayout>
@@ -89,7 +90,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/textview_add_user"
             android:textSize="25dp"
-            android:id="@+id/textView2" />
+            android:id="@+id/action_add_new_user" />
 
         <ScrollView
             android:layout_width="match_parent"
@@ -99,7 +100,7 @@
             <ListView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/listView" />
+                android:id="@+id/listEnabledUser" />
         </ScrollView>
 
     </LinearLayout>

@@ -23,4 +23,5 @@
     <string name="textview_add_user">+ Add new User ...</string>
     <string name="header_entitledUser">Entitled User</string>
     <string name="button_nfc">add NFC-tag</string>
+    <string name="save_label">SAVE</string>
 </resources>
