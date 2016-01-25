@@ -52,40 +52,53 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        ImageButton b = null;
+
+        ImageButton b1 = null;
+        ImageButton b2 = null;
+        ImageButton b3 = null;
+        ImageButton b4 = null;
+        ImageButton b5 = null;
+
+
+
+        b1 = (ImageButton) findViewById(R.id.button_smiley1);
+
+        b1.setBackground(getResources().getDrawable(R.drawable.feedback_1_n));
+        b2 = (ImageButton) findViewById(R.id.button_smiley2);
+        b2.setBackground(getResources().getDrawable(R.drawable.feedback_2_n));
+        b3 = (ImageButton) findViewById(R.id.button_smiley3);
+        b3.setBackground(getResources().getDrawable(R.drawable.feedback_3_n));
+        b4 = (ImageButton) findViewById(R.id.button_smiley4);
+        b4.setBackground(getResources().getDrawable(R.drawable.feedback_4_n));
+        b5 = (ImageButton) findViewById(R.id.button_smiley5);
+        b5.setBackground(getResources().getDrawable(R.drawable.feedback_5_n));
 
         switch (v.getId()) {
 
             case R.id.button_smiley1: {
-                b = (ImageButton) findViewById(R.id.button_smiley1);
-
-                b.setBackground(getDrawable(R.drawable.smiley2));
-
+                b1.setBackground(getResources().getDrawable(R.drawable.feedback_1_y));
 
                 selected = 1;
                 break;
             }
             case R.id.button_smiley2: {
-                b = (ImageButton) findViewById(R.id.button_smiley1);
-                b.setSelected(true);
+                b2.setBackground(getResources().getDrawable(R.drawable.feedback_2_y));
                 selected = 2;
                 break;
             }
             case R.id.button_smiley3: {
-                b = (ImageButton) findViewById(R.id.button_smiley1);
-                b.setSelected(true);
+                b3.setBackground(getResources().getDrawable(R.drawable.feedback_3_y));
                 selected = 3;
                 break;
             }
             case R.id.button_smiley4: {
-                b = (ImageButton) findViewById(R.id.button_smiley1);
-                b.setSelected(true);
+                b4.setBackground(getResources().getDrawable(R.drawable.feedback_4_y));
                 selected = 4;
                 break;
             }
             case R.id.button_smiley5: {
-                b = (ImageButton) findViewById(R.id.button_smiley1);
-                b.setSelected(true);
+                b5.setBackground(getResources().getDrawable(R.drawable.feedback_5_y));
+
                 selected = 5;
                 break;
             }
@@ -94,22 +107,29 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
                 trip.setFeedback(selected);
 
                 TextView description = (TextView)findViewById(R.id.textView_description);
-                trip.setDescription(String.valueOf(description.getText()));
 
-                trip.saveEventually(new SaveCallback() {
+                if (description.getText().toString().equals("")) {
+                    Toast.makeText(FeedbackActivity.this, "Insert a description!", Toast.LENGTH_SHORT).show();
+                } else if (selected == -1) {
+                    Toast.makeText(FeedbackActivity.this, "Choose feedback!", Toast.LENGTH_SHORT).show();
+                } else {
+                    trip.setDescription(String.valueOf(description.getText()));
 
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            Toast.makeText(FeedbackActivity.this, "Trip saved", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(FeedbackActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    trip.saveEventually(new SaveCallback() {
+
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                Toast.makeText(FeedbackActivity.this, "Trip saved", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(FeedbackActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+                    });
 
-                Intent i = new Intent(FeedbackActivity.this, CarActivity.class);
-                startActivity(i);
+                    Intent i = new Intent(FeedbackActivity.this, CarActivity.class);
+                    startActivity(i);
+                }
 
                 break;
             }
