@@ -2,6 +2,7 @@ package at.fhooe.mc.fahrtenbuch;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -13,10 +14,15 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.opencsv.CSVWriter;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
@@ -79,8 +85,36 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_export) {
+
+            mLoadingDialog = new ProgressDialog(TripsOverviewActivity.this, R.style.Base_Theme_AppCompat_Dialog);
+            mLoadingDialog.setIndeterminate(true);
+            mLoadingDialog.setCanceledOnTouchOutside(false);
+            mLoadingDialog.setMessage("Exporting...");
+            mLoadingDialog.show();
+
+            exportTripsToCSV(new Callback() {
+                @Override
+                public void done(Exception e) {
+                    mLoadingDialog.dismiss();
+                    if (e == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getBaseContext(), "Exporting successful.", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getBaseContext(), "Exporting failed.", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                }
+            });
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -96,5 +130,64 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
             Intent i = new Intent(TripsOverviewActivity.this, TripDetailsActivity.class);
             startActivity(i);
         }
+    }
+
+    private void exportTripsToCSV(final Callback callback) {
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                try {
+                    File folder = new File(android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/Fahrtenbuch");
+
+                    if (!folder.exists()) {
+                        folder.mkdir();
+                        Log.e("ExportCSV", "Folder created!");
+                    } else {
+                        Log.e("ExportCSV", "Folder exists!");
+                    }
+
+                    String filename = folder.toString() + "/" + App.car.getLicensePlate() + " - " + new Date().toLocaleString() + ".csv";
+                    CSVWriter writer = new CSVWriter(new FileWriter(filename));
+
+                    Log.e("ExportCSV", "Start to write csv");
+
+                    List<String[]> data = new ArrayList<String[]>();
+                    data.add(new String[]{"Date", "Time of departure", "Place of departure", "Time of arrival", "Place of Arrival", "Distance", "Driver", "Description"});
+
+                    ListViewTripsAdapter adapter = (ListViewTripsAdapter) mListView.getAdapter();
+                    for (int i = 0; i < adapter.getCount(); i++) {
+                        String[] strArray = new String[8];
+                        strArray[0] = adapter.getItem(i).getStartTime().toLocaleString().split(" ")[0];
+                        strArray[1] = adapter.getItem(i).getStartTime().toLocaleString().split(" ")[1];
+                        strArray[2] = adapter.getItem(i).getFirstCity(getBaseContext());
+                        strArray[3] = adapter.getItem(i).getStopTime().toLocaleString().split(" ")[1];
+                        strArray[4] = adapter.getItem(i).getLastCity(getBaseContext());
+                        strArray[5] = adapter.getItem(i).getDistance() + " km";
+                        strArray[6] = adapter.getItem(i).getDriver();
+                        strArray[7] = adapter.getItem(i).getDescription();
+
+                        Log.e("ExportCSV", "Add trip number " + i);
+                        data.add(strArray);
+                    }
+
+                    writer.writeAll(data);
+
+                    writer.close();
+
+                    Log.e("ExportCSV", "Finished export successfully");
+
+                    callback.done(null);
+                } catch (IOException e) {
+                    callback.done(e);
+                }
+                return null;
+            }
+        };
+        task.execute();
+    }
+
+
+    public interface Callback {
+        public void done(Exception e);
     }
 }
