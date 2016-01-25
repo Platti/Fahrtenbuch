@@ -347,11 +347,11 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
     /**
      * Add new car to the database
      *
-     * @param newCar    car object to save, license plate and admin have to be set!
-     * @param callback  callback method: done(ParseException e)
-     *                      possible ParseExceptions:   MISSING_OBJECT_ID (license plate or admin is missing)
-     *                                                  DUPLICATE_VALUE (license plate already taken)
-     *                                                  CONNECTION_FAILED (no internet connection)
+     * @param newCar   car object to save, license plate and admin have to be set!
+     * @param callback callback method: done(ParseException e)
+     *                 possible ParseExceptions:   MISSING_OBJECT_ID (license plate or admin is missing)
+     *                 DUPLICATE_VALUE (license plate already taken)
+     *                 CONNECTION_FAILED (no internet connection)
      */
     @Override
     public void addCar(final Car newCar, final SaveCallback callback) {
@@ -385,5 +385,64 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
                 }
             });
         }
+    }
+
+    /**
+     * Link an existing driver to an existing car
+     *
+     * @param car      car object to save, license plate and admin have to be set!
+     * @param driver   car object to save, license plate and admin have to be set!
+     * @param callback callback method: done(ParseException e)
+     *                 possible ParseExceptions:    OBJECT_NOT_FOUND (driver or car doesn't exist)
+     *                                              DUPLICATE_VALUE (mapping already exists)
+     *                                              CONNECTION_FAILED (no internet connection)
+     */
+    @Override
+    public void linkDriverToCar(final String driver, final String car, final SaveCallback callback) {
+        final ParseQuery<Driver> queryDriver = ParseQuery.getQuery(Driver.class);
+        queryDriver.whereEqualTo("username", driver);
+        queryDriver.getFirstInBackground(new GetCallback<Driver>() {
+            @Override
+            public void done(Driver d, ParseException e) {
+                if (e == null) {
+                    ParseQuery<Car> queryCar = ParseQuery.getQuery(Car.class);
+                    queryCar.whereEqualTo("licensePlate", car);
+                    queryCar.getFirstInBackground(new GetCallback<Car>() {
+                        @Override
+                        public void done(Car c, ParseException e) {
+                            if (e == null) {
+                                ParseQuery<DriverCarMapping> queryMapping = ParseQuery.getQuery(DriverCarMapping.class);
+                                queryMapping.whereEqualTo("driver", driver);
+                                queryMapping.whereEqualTo("car", car);
+                                queryMapping.getFirstInBackground(new GetCallback<DriverCarMapping>() {
+                                    @Override
+                                    public void done(DriverCarMapping m, ParseException e) {
+                                        if (e == null) {
+                                            callback.done(new ParseException(ParseException.DUPLICATE_VALUE, "driver already linked to this car"));
+                                        } else if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
+                                            DriverCarMapping mapping = new DriverCarMapping();
+                                            mapping.setDriver(driver);
+                                            mapping.setCar(car);
+                                            mapping.saveInBackground(callback);
+                                        } else {
+                                            callback.done(e);
+                                        }
+                                    }
+                                });
+                            } else if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
+                                callback.done(new ParseException(ParseException.OBJECT_NOT_FOUND, "car not found"));
+                            } else {
+                                callback.done(e);
+                            }
+                        }
+                    });
+
+                } else if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
+                    callback.done(new ParseException(ParseException.OBJECT_NOT_FOUND, "driver not found"));
+                } else {
+                    callback.done(e);
+                }
+            }
+        });
     }
 }

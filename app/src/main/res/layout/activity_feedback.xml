@@ -31,7 +31,7 @@
                 android:layout_alignEnd="@+id/button_saveTrip"
                 android:layout_toRightOf="@+id/textView2"
                 android:layout_toEndOf="@+id/textView2"
-                android:background="@drawable/smiley1"/>
+                android:background="@drawable/feedback_1_n"/>
 
             <ImageButton
                 android:layout_width="65dp"
@@ -42,7 +42,7 @@
                 android:layout_alignEnd="@+id/button_saveTrip"
                 android:layout_toRightOf="@+id/textView2"
                 android:layout_toEndOf="@+id/textView2"
-                android:background="@drawable/smiley2" />
+                android:background="@drawable/feedback_2_n" />
 
             <ImageButton
                 android:layout_width="65dp"
@@ -53,7 +53,7 @@
                 android:layout_alignEnd="@+id/button_saveTrip"
                 android:layout_toRightOf="@+id/textView2"
                 android:layout_toEndOf="@+id/textView2"
-                android:background="@drawable/smiley3" />
+                android:background="@drawable/feedback_3_n" />
 
             <ImageButton
                 android:layout_width="65dp"
@@ -64,7 +64,7 @@
                 android:layout_alignEnd="@+id/button_saveTrip"
                 android:layout_toRightOf="@+id/textView2"
                 android:layout_toEndOf="@+id/textView2"
-                android:background="@drawable/smiley4" />
+                android:background="@drawable/feedback_4_n" />
 
             <ImageButton
                 android:layout_width="65dp"
@@ -75,7 +75,7 @@
                 android:layout_alignEnd="@+id/button_saveTrip"
                 android:layout_toRightOf="@+id/textView2"
                 android:layout_toEndOf="@+id/textView2"
-                android:background="@drawable/smiley5" />
+                android:background="@drawable/feedback_5_n" />
 
         </LinearLayout>
 
@@ -94,7 +94,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/textView_description"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:inputType="textPersonName" />
 
         <Button
             android:layout_width="wrap_content"
