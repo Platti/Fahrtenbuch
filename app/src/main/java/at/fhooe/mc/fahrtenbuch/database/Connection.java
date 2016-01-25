@@ -32,5 +32,6 @@ public interface Connection {
     public void registerUser(Driver driver, SaveCallback callback);
 
     public void addCar(Car car, SaveCallback callback);
+    public void linkDriverToCar(String driver, String car, SaveCallback callback);
 
 }
