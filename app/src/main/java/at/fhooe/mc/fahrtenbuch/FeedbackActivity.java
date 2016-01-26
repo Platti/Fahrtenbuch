@@ -116,7 +116,6 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
                     trip.setDescription(String.valueOf(description.getText()));
 
                     trip.saveEventually(new SaveCallback() {
-
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
@@ -127,8 +126,9 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
                         }
                     });
 
-                    Intent i = new Intent(FeedbackActivity.this, CarActivity.class);
-                    startActivity(i);
+//                    Intent i = new Intent(FeedbackActivity.this, CarActivity.class);
+//                    startActivity(i);
+                    finish();
                 }
 
                 break;

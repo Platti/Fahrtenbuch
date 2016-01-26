@@ -52,10 +52,13 @@
 
         <activity
             android:name=".MapsActivity"
+            android:label="@string/title_activity_maps"
+            android:screenOrientation="portrait" >
+            <!--<meta-data
             android:label="@string/title_activity_maps">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="at.fhooe.mc.fahrtenbuch.MainActivity" />
+                android:value="at.fhooe.mc.fahrtenbuch.MainActivity" />-->
         </activity>
         <activity
             android:name=".LoginActivity"
@@ -117,6 +120,8 @@
         <activity
             android:name=".TripDetailsActivity"
             android:label="@string/title_activity_trip_details"
+            android:parentActivityName=".TripsOverviewActivity"
+            android:screenOrientation="portrait" >
             android:parentActivityName=".TripsOverviewActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
