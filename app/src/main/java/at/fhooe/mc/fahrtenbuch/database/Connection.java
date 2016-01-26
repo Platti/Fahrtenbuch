@@ -2,6 +2,7 @@ package at.fhooe.mc.fahrtenbuch.database;
 
 import android.app.Application;
 
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.SaveCallback;
@@ -36,4 +37,5 @@ public interface Connection {
     public void addCar(Car car, SaveCallback callback);
     public void linkDriverToCar(String driver, String car, SaveCallback callback);
 
+    public void deleteMapping(String driver, String car, final DeleteCallback callback);
 }
