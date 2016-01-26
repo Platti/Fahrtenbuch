@@ -44,7 +44,7 @@ public class LocationBackgroundService extends Service implements com.google.and
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         createLocationRequest();
-
+        mGoogleApiClient.connect();
     }
 
     @Override
@@ -55,13 +55,15 @@ public class LocationBackgroundService extends Service implements com.google.and
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d("Fahrtenbuch", "onStartCommand");
+
         return START_STICKY;
     }
 
     @Override
     public void onConnected(Bundle bundle) {
 
-        Log.d("Fahrtenbuch", "inConnected service");
+        Log.d("Fahrtenbuch", "onConnected service");
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
@@ -96,7 +98,7 @@ public class LocationBackgroundService extends Service implements com.google.and
         Intent intent = new Intent();
         intent.setAction(MY_ACTION);
 
-        intent.putExtra("DATAPASSED", location);
+        intent.putExtra("LOCATION", location);
 
         sendBroadcast(intent);
     }
@@ -105,4 +107,6 @@ public class LocationBackgroundService extends Service implements com.google.and
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
+
+
 }
