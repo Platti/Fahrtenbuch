@@ -1,10 +1,21 @@
 package at.fhooe.mc.fahrtenbuch;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -17,11 +28,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import at.fhooe.mc.fahrtenbuch.database.Weather;
 import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
 
 
@@ -39,16 +53,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         mTrip = App.trip;
         setTitle(mTrip.getFirstCity(this) + " - " + mTrip.getLastCity(this));
 
-        TextView driverText = (TextView)findViewById(R.id.textView_driver);
-        driverText.setText(mTrip.getDriver());
-        TextView distanceText = (TextView)findViewById(R.id.textView_distance);
-        distanceText.setText(String.valueOf(mTrip.getDistance()) + " km");
-        TextView descriptionText = (TextView)findViewById(R.id.textView_description);
-        descriptionText.setText(mTrip.getDescription());
-        TextView weatherText = (TextView)findViewById(R.id.textView_weather);
-        weatherText.setText(mTrip.getWeather().getDescription());
-        TextView feedbackText = (TextView)findViewById(R.id.textView_feedback);
-        feedbackText.setText(String.valueOf(mTrip.getFeedback()));
+        fillTextViews();
 
         mPointList = mTrip.getGeoPoints();
 
@@ -66,6 +71,18 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         }
     }
 
+    private void fillTextViews(){
+        TextView driverText = (TextView) findViewById(R.id.textView_driver);
+        driverText.setText(mTrip.getDriver());
+        TextView distanceText = (TextView) findViewById(R.id.textView_distance);
+        distanceText.setText(String.valueOf(mTrip.getDistance()) + " km");
+        TextView descriptionText = (TextView) findViewById(R.id.textView_description);
+        descriptionText.setText(mTrip.getDescription());
+        TextView weatherText = (TextView) findViewById(R.id.textView_weather);
+        weatherText.setText(mTrip.getWeather().getDescription());
+        TextView feedbackText = (TextView) findViewById(R.id.textView_feedback);
+        feedbackText.setText(String.valueOf(mTrip.getFeedback()));
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -82,11 +99,57 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_edit) {
+            if(App.car.isAdmin(App.driver)){
+                openEditDialog();
+            } else {
+                Toast.makeText(this, "Only the admin is allowed to edit trips!", Toast.LENGTH_LONG).show();
+            }
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openEditDialog() {
+
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_edit_trip);
+        dialog.setTitle("Edit trip of " + mTrip.getStartTime().toLocaleString().split(" ")[0]);
+
+        final EditText etDistance = (EditText) dialog.findViewById(R.id.edit_trip_distance);
+        etDistance.setText(String.valueOf(mTrip.getDistance()));
+        final EditText etWeather = (EditText) dialog.findViewById(R.id.edit_trip_weather);
+        etWeather.setText(mTrip.getWeather().getDescription());
+        final EditText etDescription = (EditText) dialog.findViewById(R.id.edit_trip_description);
+        etDescription.setText(mTrip.getDescription());
+
+        Button b = (Button) dialog.findViewById(R.id.edit_trip_save);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mTrip.setDistance(Integer.parseInt(etDistance.getText().toString()));
+                mTrip.setWeather(etWeather.getText().toString());
+                mTrip.setDescription(etDescription.getText().toString());
+                mTrip.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        fillTextViews();
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+
+        b = (Button) dialog.findViewById(R.id.edit_trip_cancel);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
     @Override
@@ -107,7 +170,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
             Polyline line = mMap.addPolyline(
                     new PolylineOptions().add(
                             new LatLng(src.getLatitude(), src.getLongitude()),
-                            new LatLng(dest.getLatitude(),dest.getLongitude())
+                            new LatLng(dest.getLatitude(), dest.getLongitude())
                     )
             );
         }

@@ -96,6 +96,8 @@ public class Trip extends ParseObject {
         put("weatherDescription", value.getDescription());
     }
 
+    public void setWeather(String value){put("weatherDescription", value);}
+
     public int getFeedback() {
         return getInt("feedback");
     }

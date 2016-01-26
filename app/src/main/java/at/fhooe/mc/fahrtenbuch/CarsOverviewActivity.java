@@ -80,7 +80,7 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
 
             mAdapter = NfcAdapter.getDefaultAdapter(this);
 
-            if (!mAdapter.isEnabled()) {
+            if (mAdapter != null && !mAdapter.isEnabled()) {
 
                 AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
                 alertbox.setTitle("Info");
