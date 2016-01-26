@@ -41,4 +41,6 @@
     <string name="dialog_title_noNFC">Not found</string>
     <string name="dialog_text_noNFC">Car with the NFC-id does not exist, or user isn\'t qualified for this car</string>
     <string name="button_add_car">Add new car</string>
+    <string name="dialog_title_exitWithoutSaving">Exit without saving!</string>
+    <string name="dialog_text_exitWithoutSaving">Do you really want to exit without saving changes?</string>
 </resources>

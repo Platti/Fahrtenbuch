@@ -217,8 +217,6 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 }
-            } else {
-                App.car = null;
             }
         }
     }

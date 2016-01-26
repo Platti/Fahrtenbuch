@@ -56,7 +56,7 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
 
     Context mContext = this;
 
-    Car mNewCar;
+    public Car mNewCar;
 
     EditText mTextFieldMake;
     EditText mTextFieldModel;
@@ -77,7 +77,6 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_car_add);
-
         TextView currentUser = (TextView) findViewById(R.id.header_currentUser).findViewById(R.id.layout_header_txt);
         currentUser.setText(App.driver.getFirstName() + " " + App.driver.getLastName());
         TextView entitledUser = (TextView) findViewById(R.id.header_entitledUser).findViewById(R.id.layout_header_txt);
@@ -140,8 +139,11 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
             public void done(List<Driver> drivers, ParseException e) {
                 if (e == null) {
                     for (Driver d : drivers) {
-                        adapter.add(d);
-                        mUserList.add(d);
+                        if(!d.getUsername().equals(mNewCar.getAdmin())){
+                            adapter.add(d);
+                            mUserList.add(d);
+                        }
+
                     }
                 }
             }
@@ -161,98 +163,107 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        boolean var = true;
         switch (item.getItemId()){
             case R.id.action_done:
-                String make = mTextFieldMake.getText().toString();
-                String modell = mTextFieldModel.getText().toString();
-                String number = mTextFieldNumber.getText().toString();
-                String km = mTextFieldKilometers.getText().toString();
-
-                if(make != null && modell != null && number != null && km != null &&
-                        !make.equals("") && !modell.equals("") && !number.equals("") && !km.equals("")){
-
-                    mNewCar.setAdmin(App.driver);
-                    mNewCar.setMake(make);
-                    mNewCar.setModel(modell);
-                    mNewCar.setLicensePlate(number);
-                    int milage = Integer.parseInt(km);
-                    mNewCar.setMileage(milage);
-                    mLoadingDialog = new ProgressDialog(CarAddActivity.this);
-                    mLoadingDialog.setIndeterminate(true);
-                    mLoadingDialog.setCanceledOnTouchOutside(false);
-                    mLoadingDialog.setMessage("Saving...");
-                    mLoadingDialog.show();
-                    if(App.car == null) {
-                        App.database.addCar(mNewCar, new SaveCallback() {
-                            @Override
-                            public void done(final ParseException e) {
-                                mLoadingDialog.dismiss();
-                                if (e == null) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getBaseContext(), "New care saved in database", Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                    App.car = mNewCar;
-                                    Intent returnIntent = new Intent();
-                                    setResult(Activity.RESULT_OK, returnIntent);
-                                    finish();
-                                } else {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getBaseContext(), "Saving failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    }else {
-                        mNewCar.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(final ParseException e) {
-                                mLoadingDialog.dismiss();
-                                if(e==null){
-                                    App.car = mNewCar;
-                                    Intent returnIntent = new Intent();
-                                    setResult(Activity.RESULT_OK, returnIntent);
-                                    finish();
-                                } else {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getBaseContext(), "Saving failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    }
-
-                } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle(R.string.dialog_title_savaMissing);
-                    builder.setMessage(getString(R.string.dialog_text_saveMissing));
-                    builder.setPositiveButton(R.string.dialog_saveMissing_fillout, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-                    builder.setNegativeButton(R.string.dialog_saveMissing_drop, new DialogInterface.OnClickListener() {
-
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mNewCar = null;
-                            finish();
-                        }
-                    });
-                    builder.show();
-                }
-
+                saveAndReturn();
+                var = super.onOptionsItemSelected(item);
                 break;
+            case android.R.id.home:
+                onBackPressed();
+
         }
-        return super.onOptionsItemSelected(item);
+        return var;
+    }
+
+    private void saveAndReturn(){
+        String make = mTextFieldMake.getText().toString();
+        String modell = mTextFieldModel.getText().toString();
+        String number = mTextFieldNumber.getText().toString();
+        String km = mTextFieldKilometers.getText().toString();
+
+        if(make != null && modell != null && number != null && km != null &&
+                !make.equals("") && !modell.equals("") && !number.equals("") && !km.equals("")){
+
+            mNewCar.setAdmin(App.driver);
+            mNewCar.setMake(make);
+            mNewCar.setModel(modell);
+            mNewCar.setLicensePlate(number);
+            int milage = Integer.parseInt(km);
+            mNewCar.setMileage(milage);
+            mLoadingDialog = new ProgressDialog(CarAddActivity.this);
+            mLoadingDialog.setIndeterminate(true);
+            mLoadingDialog.setCanceledOnTouchOutside(false);
+            mLoadingDialog.setMessage("Saving...");
+            mLoadingDialog.show();
+            if(App.car == null) {
+                App.database.addCar(mNewCar, new SaveCallback() {
+                    @Override
+                    public void done(final ParseException e) {
+                        mLoadingDialog.dismiss();
+                        if (e == null) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), "New care saved in database", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            App.car = mNewCar;
+                            Intent returnIntent = new Intent();
+                            setResult(Activity.RESULT_OK, returnIntent);
+                            finish();
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), "Saving failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    }
+                });
+            }else {
+                mNewCar.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(final ParseException e) {
+                        mLoadingDialog.dismiss();
+                        if(e==null){
+                            App.car = mNewCar;
+                            Intent returnIntent = new Intent();
+                            setResult(Activity.RESULT_OK, returnIntent);
+                            finish();
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), "Saving failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.dialog_title_savaMissing);
+            builder.setMessage(getString(R.string.dialog_text_saveMissing));
+            builder.setPositiveButton(R.string.dialog_saveMissing_fillout, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.setNegativeButton(R.string.dialog_saveMissing_drop, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mNewCar = null;
+                    finish();
+                }
+            });
+            builder.show();
+        }
+
     }
 
     @Override
@@ -401,7 +412,6 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
     @Override
     protected void onResume() {
         super.onResume();
-        App.car = null;
         if (mAdapter!= null) {
             mAdapter.disableForegroundDispatch(this);
         }
@@ -410,6 +420,33 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        saveChanges();
+    }
+
+    public void saveChanges(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.dialog_title_exitWithoutSaving);
+        builder.setMessage(getString(R.string.dialog_text_exitWithoutSaving));
+        builder.setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                saveAndReturn();
+            }
+        });
+        builder.setNegativeButton(R.string.dialog_saveMissing_drop, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mNewCar = null;
+                finish();
+            }
+        });
+        builder.show();
     }
 
     private void initForegroundDispatchMode() throws IntentFilter.MalformedMimeTypeException {
