@@ -23,18 +23,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
 
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.List;
 
 import at.fhooe.mc.fahrtenbuch.database.parse.Car;
-import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
 
 public class CarsOverviewActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
@@ -49,62 +47,78 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cars_overview);
+        if (App.driver != null) {
+            mCarList = new ArrayList<>();
 
-
-        mAdapter = NfcAdapter.getDefaultAdapter(this);
-
-        if (!mAdapter.isEnabled()) {
-
-            AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
-            alertbox.setTitle("Info");
-            alertbox.setMessage(getString(R.string.msg_nfcon));
-            alertbox.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
+            final ListView listView = (ListView) findViewById(R.id.list_view_cars);
+            final ListViewCarsAdapter adapter = new ListViewCarsAdapter(getBaseContext());
+            adapter.mActivity = this;
+            App.database.getCars(App.driver, new FindCallback<Car>() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                        Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
-                        startActivity(intent);
-                    } else {
-                        Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-                        startActivity(intent);
+                public void done(List<Car> cars, ParseException e) {
+                    if (e == null) {
+                        for (Car car : cars) {
+                            adapter.add(car);
+                            mCarList.add(car);
+
+                        }
+                        Car car = findCarWithNFCId(App.nfcId);
+                        if (car != null) {
+                            App.car = car;
+
+                            Intent i = new Intent(CarsOverviewActivity.this, CarActivity.class);
+                            startActivity(i);
+                        } else {
+                            Toast.makeText(CarsOverviewActivity.this, "Nfc doesn't work " + App.nfcId, Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
             });
-            alertbox.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener(this);
 
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
 
-                }
-            });
-            alertbox.show();
+            mAdapter = NfcAdapter.getDefaultAdapter(this);
 
+            if (!mAdapter.isEnabled()) {
+
+                AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
+                alertbox.setTitle("Info");
+                alertbox.setMessage(getString(R.string.msg_nfcon));
+                alertbox.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+                            startActivity(intent);
+                        } else {
+                            Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                            startActivity(intent);
+                        }
+                    }
+                });
+                alertbox.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                alertbox.show();
+
+            }
+
+            App.car = null;
+            Button button = (Button) findViewById(R.id.add_new_car_button);
+            button.setOnClickListener(this);
+        } else if (App.driver == null) {
+            Intent i = new Intent(CarsOverviewActivity.this, LoginActivity.class);
+            startActivity(i);
+            finish();
         }
 
-        App.car = null;
+        readNFC(getIntent());
 
-
-        mCarList = new ArrayList<>();
-
-        final ListView listView = (ListView) findViewById(R.id.list_view_cars);
-        final ListViewCarsAdapter adapter = new ListViewCarsAdapter(getBaseContext());
-        adapter.mActivity = this;
-        App.database.getCars(App.driver, new FindCallback<Car>() {
-            @Override
-            public void done(List<Car> cars, ParseException e) {
-                if (e == null) {
-                    for (Car car : cars) {
-                        adapter.add(car);
-                        mCarList.add(car);
-                    }
-                }
-            }
-        });
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(this);
-
-        Button button = (Button) findViewById(R.id.add_new_car_button);
-        button.setOnClickListener(this);
     }
 
 
@@ -141,12 +155,15 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
             App.database.test();
         } else if (id == R.id.action_test2) {
             App.car = App.database.getCars(App.driver).get(0); // TODO: zum testen synchron, daher verzögerung bei click auf menu
+
+
             Intent i = new Intent(CarsOverviewActivity.this, TripsOverviewActivity.class);
             startActivity(i);
         } else if (id == R.id.action_testMap) {
             App.car = App.database.getCars(App.driver).get(0);
             Intent i = new Intent(CarsOverviewActivity.this, MapsActivity.class);
             startActivity(i);
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -162,26 +179,54 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
 
     @Override
     public void onNewIntent(Intent _intent) {
-        if (_intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
-            Log.i(this.getClass().toString(), "Found Tech TAG");
-        } else if (_intent.getAction().equals(NfcAdapter.ACTION_NDEF_DISCOVERED)) {
-            Log.i(this.getClass().toString(), "Found NDEF TAG");
-        } else if (_intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            Log.i(this.getClass().toString(), "Found tag TAG");
-        }
-        Tag tag = _intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        byte[] bID = tag.getId();
-        String id = convertToHexString(bID); // custom method to convert ID
-        Car car = new Car();
-        Log.i(this.getClass().toString(), "Id: " + id);
-
+        readNFC(_intent);
     }
 
+    public void readNFC(Intent _intent){
+        if(_intent != null) {
+            if (_intent.getAction() != null && (_intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED) || _intent.getAction().equals(NfcAdapter.ACTION_NDEF_DISCOVERED) || _intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED))) {
+                if (_intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
+                    Log.i(this.getClass().toString(), "Found Tech TAG");
+                } else if (_intent.getAction().equals(NfcAdapter.ACTION_NDEF_DISCOVERED)) {
+                    Log.i(this.getClass().toString(), "Found NDEF TAG");
+                } else if (_intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
+                    Log.i(this.getClass().toString(), "Found tag TAG");
+                }
+                Tag tag = _intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                byte[] bID = tag.getId();
+                String id = convertToHexString(bID); // custom method to convert ID
+
+                App.nfcId = id;
+                Log.i(this.getClass().toString(), "Id: " + id);
+                Car car = findCarWithNFCId(id);
+                if (car != null) {
+                    App.car = car;
+
+                    Intent i = new Intent(CarsOverviewActivity.this, CarActivity.class);
+                    startActivity(i);
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle(R.string.dialog_title_noNFC);
+                    builder.setMessage(getString(R.string.dialog_text_noNFC));
+                    builder.setNeutralButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            } else {
+                App.car = null;
+            }
+        }
+    }
 
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
     public static String convertToHexString(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; j++ ) {
+        for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;
             hexChars[j * 2] = hexArray[v >>> 4];
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
@@ -192,7 +237,7 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
     @Override
     protected void onPause() {
         super.onPause();
-        if (mAdapter!= null) {
+        if (mAdapter != null) {
             mAdapter.disableForegroundDispatch(this);
         }
     }
@@ -200,6 +245,7 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
     @Override
     protected void onResume() {
         super.onResume();
+
         try {
             initForegroundDispatchMode();
         } catch (IntentFilter.MalformedMimeTypeException e) {
@@ -221,7 +267,7 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
                 new String[]{NfcA.class.getName()},
                 new String[]{NfcB.class.getName()}}; // extend if necessary
 
-        if (mAdapter!= null) {
+        if (mAdapter != null) {
             mAdapter.enableForegroundDispatch(this, pi, filters, techList);
         }
     }
@@ -229,7 +275,7 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.add_new_car_button:
                 Intent i = new Intent(CarsOverviewActivity.this, CarAddActivity.class);
                 startActivityForResult(i, NEWCAR_REQUEST_CODE);
@@ -246,5 +292,31 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
             }
         }
     }
+
+    private Car findCarWithNFCId(String _id) {
+        if (_id != null && mCarList != null) {
+            for (Car car : mCarList) {
+                if (car.getNFC() != null && car.getNFC().equals(_id)) {
+                    Log.i(this.getLocalClassName(), "NFC-ID: " + App.nfcId + " Car: " + car.toString());
+                    App.nfcId = null;
+
+                    return car;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+
 
 }

@@ -38,4 +38,7 @@
     <string name="_dialog_text_addUser">Give in the username, to give the user authorisation for the car</string>
     <string name="dialog_cancle_button">Cancel</string>
     <string name="button_nfc_change">Change NFC tag</string>
+    <string name="dialog_title_noNFC">Not found</string>
+    <string name="dialog_text_noNFC">Car with the NFC-id does not exist, or user isn\'t qualified for this car</string>
+    <string name="button_add_car">Add new car</string>
 </resources>

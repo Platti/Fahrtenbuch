@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -121,6 +122,7 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
             }
             if(!App.car.getLicensePlate().equals("")){
                 mTextFieldNumber.setText(App.car.getLicensePlate());
+                mTextFieldNumber.setEnabled(false);
             }
             if(App.car.getMileage() != 0){
                 mTextFieldKilometers.setText(String.valueOf(App.car.getMileage()));
@@ -177,32 +179,54 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
                     mLoadingDialog.setCanceledOnTouchOutside(false);
                     mLoadingDialog.setMessage("Saving...");
                     mLoadingDialog.show();
-                    App.database.addCar(mNewCar, new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                           mLoadingDialog.dismiss();
-                            if (e == null) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(getBaseContext(), "New care saved in database", Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                            } else {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(getBaseContext(), "Saving failed", Toast.LENGTH_LONG).show();
-                                    }
-                                });
+                    if(App.car == null) {
+                        App.database.addCar(mNewCar, new SaveCallback() {
+                            @Override
+                            public void done(final ParseException e) {
+                                mLoadingDialog.dismiss();
+                                if (e == null) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getBaseContext(), "New care saved in database", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                    App.car = mNewCar;
+                                    Intent returnIntent = new Intent();
+                                    setResult(Activity.RESULT_OK, returnIntent);
+                                    finish();
+                                } else {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getBaseContext(), "Saving failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
                             }
-                        }
-                    });
+                        });
+                    }else {
+                        mNewCar.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(final ParseException e) {
+                                mLoadingDialog.dismiss();
+                                if(e==null){
+                                    App.car = mNewCar;
+                                    Intent returnIntent = new Intent();
+                                    setResult(Activity.RESULT_OK, returnIntent);
+                                    finish();
+                                } else {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getBaseContext(), "Saving failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
 
-                    App.car = mNewCar;
-                    Intent returnIntent = new Intent();
-                    setResult(Activity.RESULT_OK, returnIntent);
-                    finish();
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle(R.string.dialog_title_savaMissing);
@@ -425,4 +449,5 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
     public interface Callback {
         public void done(Exception e);
     }
+
 }

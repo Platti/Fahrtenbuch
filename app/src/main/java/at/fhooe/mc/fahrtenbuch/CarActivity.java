@@ -1,7 +1,9 @@
 package at.fhooe.mc.fahrtenbuch;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -24,9 +26,16 @@ public class CarActivity extends ActionBarActivity implements View.OnClickListen
         button = (Button) findViewById(R.id.button_show_rides);
         button.setOnClickListener(this);
         button = (Button) findViewById(R.id.button_car_settings);
-        button.setOnClickListener(this);
+
+        if(!App.driver.getUsername().equals(App.car.getAdmin())){
+            button.setVisibility(View.GONE);
+        } else {
+            button.setVisibility(View.VISIBLE);
+            button.setOnClickListener(this);
+        }
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

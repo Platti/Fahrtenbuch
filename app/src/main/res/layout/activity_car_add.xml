@@ -40,14 +40,16 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/textfield_make"
                     android:layout_gravity="left|center_vertical"
-                    android:hint="@string/textfield_make" />
+                    android:hint="@string/textfield_make"
+                    android:inputType="textPersonName" />
 
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/textfield_model"
                     android:layout_gravity="left|center_vertical"
-                    android:hint="@string/textfield_modell" />
+                    android:hint="@string/textfield_modell"
+                    android:inputType="textPersonName" />
             </LinearLayout>
         </LinearLayout>
 
@@ -56,7 +58,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/textfield_number"
             android:layout_gravity="left|center_vertical"
-            android:hint="@string/textfield_number" />
+            android:hint="@string/textfield_number"
+            android:inputType="textPersonName" />
 
         <EditText
             android:layout_width="match_parent"
