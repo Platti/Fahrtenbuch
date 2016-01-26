@@ -179,6 +179,7 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
 
     @Override
     public void onNewIntent(Intent _intent) {
+        App.car = null;
         readNFC(_intent);
     }
 
@@ -216,8 +217,6 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 }
-            } else {
-                App.car = null;
             }
         }
     }

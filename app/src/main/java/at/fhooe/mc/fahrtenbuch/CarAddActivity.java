@@ -3,6 +3,7 @@ package at.fhooe.mc.fahrtenbuch;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -23,6 +24,7 @@ import android.support.v7.app.ActionBarActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -54,7 +56,7 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
 
     Context mContext = this;
 
-    Car mNewCar;
+    public Car mNewCar;
 
     EditText mTextFieldMake;
     EditText mTextFieldModel;
@@ -75,7 +77,6 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_car_add);
-
         TextView currentUser = (TextView) findViewById(R.id.header_currentUser).findViewById(R.id.layout_header_txt);
         currentUser.setText(App.driver.getFirstName() + " " + App.driver.getLastName());
         TextView entitledUser = (TextView) findViewById(R.id.header_entitledUser).findViewById(R.id.layout_header_txt);
@@ -86,32 +87,19 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         mTextFieldModel = (EditText) findViewById(R.id.textfield_model);
         mTextFieldNumber = (EditText) findViewById(R.id.textfield_number);
         mTextFieldKilometers = (EditText) findViewById(R.id.textfield_kilometers);
-        mTextFieldUser = (EditText) findViewById(R.id.dialog_textfield_username);
+
 
         mNFCButton = (Button) findViewById(R.id.button_nfc);
         mNFCButton.setOnClickListener(this);
 
-        mUserList = new ArrayList<>();
-        final ListView listView = (ListView) findViewById(R.id.listEnabledUser);
-        final ListViewUserAdapter adapter = new ListViewUserAdapter(getBaseContext());
-        adapter.mActivity = this;
+
 
         if(App.car == null){
             mNewCar = new Car();
         } else {
             mNewCar = App.car;
 
-//        App.database.getDriverOfCar(App.driver, new FindCallback<Driver>() {
-//            @Override
-//            public void done(List<Driver> drivers, ParseException e) {
-//                if (e == null) {
-//                    for (Driver d : drivers) {
-//                        adapter.add(d);
-//                        mUserList.add(d);
-//                    }
-//                }
-//            }
-//        });
+            initUserList();
 
             if(!App.car.getMake().equals("")){
                 mTextFieldMake.setText(App.car.getMake());
@@ -132,18 +120,35 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
             }
         }
 
-        listView.setAdapter(adapter);
-
-
-
         mAddUser = (TextView) findViewById(R.id.action_add_new_user);
         mAddUser.setOnClickListener(this);
-
-
 
         if (mAdapter!= null) {
             mAdapter.disableForegroundDispatch(this);
         }
+    }
+
+    private void initUserList(){
+        mUserList = new ArrayList<>();
+        final ListView listView = (ListView) findViewById(R.id.listEnabledUser);
+        final ListViewUserAdapter adapter = new ListViewUserAdapter(getBaseContext());
+        adapter.mActivity = this;
+
+        App.database.getDrivers(App.car, new FindCallback<Driver>() {
+            @Override
+            public void done(List<Driver> drivers, ParseException e) {
+                if (e == null) {
+                    for (Driver d : drivers) {
+                        if(!d.getUsername().equals(mNewCar.getAdmin())){
+                            adapter.add(d);
+                            mUserList.add(d);
+                        }
+
+                    }
+                }
+            }
+        });
+        listView.setAdapter(adapter);
     }
 
     @Override
@@ -158,98 +163,107 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        boolean var = true;
         switch (item.getItemId()){
             case R.id.action_done:
-                String make = mTextFieldMake.getText().toString();
-                String modell = mTextFieldModel.getText().toString();
-                String number = mTextFieldNumber.getText().toString();
-                String km = mTextFieldKilometers.getText().toString();
-
-                if(make != null && modell != null && number != null && km != null &&
-                        !make.equals("") && !modell.equals("") && !number.equals("") && !km.equals("")){
-
-                    mNewCar.setAdmin(App.driver);
-                    mNewCar.setMake(make);
-                    mNewCar.setModel(modell);
-                    mNewCar.setLicensePlate(number);
-                    int milage = Integer.parseInt(km);
-                    mNewCar.setMileage(milage);
-                    mLoadingDialog = new ProgressDialog(CarAddActivity.this);
-                    mLoadingDialog.setIndeterminate(true);
-                    mLoadingDialog.setCanceledOnTouchOutside(false);
-                    mLoadingDialog.setMessage("Saving...");
-                    mLoadingDialog.show();
-                    if(App.car == null) {
-                        App.database.addCar(mNewCar, new SaveCallback() {
-                            @Override
-                            public void done(final ParseException e) {
-                                mLoadingDialog.dismiss();
-                                if (e == null) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getBaseContext(), "New care saved in database", Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                    App.car = mNewCar;
-                                    Intent returnIntent = new Intent();
-                                    setResult(Activity.RESULT_OK, returnIntent);
-                                    finish();
-                                } else {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getBaseContext(), "Saving failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    }else {
-                        mNewCar.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(final ParseException e) {
-                                mLoadingDialog.dismiss();
-                                if(e==null){
-                                    App.car = mNewCar;
-                                    Intent returnIntent = new Intent();
-                                    setResult(Activity.RESULT_OK, returnIntent);
-                                    finish();
-                                } else {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getBaseContext(), "Saving failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    }
-
-                } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle(R.string.dialog_title_savaMissing);
-                    builder.setMessage(getString(R.string.dialog_text_saveMissing));
-                    builder.setPositiveButton(R.string.dialog_saveMissing_fillout, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-                    builder.setNegativeButton(R.string.dialog_saveMissing_drop, new DialogInterface.OnClickListener() {
-
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mNewCar = null;
-                            finish();
-                        }
-                    });
-                    builder.show();
-                }
-
+                saveAndReturn();
+                var = super.onOptionsItemSelected(item);
                 break;
+            case android.R.id.home:
+                onBackPressed();
+
         }
-        return super.onOptionsItemSelected(item);
+        return var;
+    }
+
+    private void saveAndReturn(){
+        String make = mTextFieldMake.getText().toString();
+        String modell = mTextFieldModel.getText().toString();
+        String number = mTextFieldNumber.getText().toString();
+        String km = mTextFieldKilometers.getText().toString();
+
+        if(make != null && modell != null && number != null && km != null &&
+                !make.equals("") && !modell.equals("") && !number.equals("") && !km.equals("")){
+
+            mNewCar.setAdmin(App.driver);
+            mNewCar.setMake(make);
+            mNewCar.setModel(modell);
+            mNewCar.setLicensePlate(number);
+            int milage = Integer.parseInt(km);
+            mNewCar.setMileage(milage);
+            mLoadingDialog = new ProgressDialog(CarAddActivity.this);
+            mLoadingDialog.setIndeterminate(true);
+            mLoadingDialog.setCanceledOnTouchOutside(false);
+            mLoadingDialog.setMessage("Saving...");
+            mLoadingDialog.show();
+            if(App.car == null) {
+                App.database.addCar(mNewCar, new SaveCallback() {
+                    @Override
+                    public void done(final ParseException e) {
+                        mLoadingDialog.dismiss();
+                        if (e == null) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), "New care saved in database", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            App.car = mNewCar;
+                            Intent returnIntent = new Intent();
+                            setResult(Activity.RESULT_OK, returnIntent);
+                            finish();
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), "Saving failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    }
+                });
+            }else {
+                mNewCar.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(final ParseException e) {
+                        mLoadingDialog.dismiss();
+                        if(e==null){
+                            App.car = mNewCar;
+                            Intent returnIntent = new Intent();
+                            setResult(Activity.RESULT_OK, returnIntent);
+                            finish();
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), "Saving failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.dialog_title_savaMissing);
+            builder.setMessage(getString(R.string.dialog_text_saveMissing));
+            builder.setPositiveButton(R.string.dialog_saveMissing_fillout, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.setNegativeButton(R.string.dialog_saveMissing_drop, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mNewCar = null;
+                    finish();
+                }
+            });
+            builder.show();
+        }
+
     }
 
     @Override
@@ -306,41 +320,40 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
 
                 break;
             case R.id.action_add_new_user:
+
+
                 AlertDialog.Builder userBuilder = new AlertDialog.Builder(this);
                 userBuilder.setTitle(R.string.dialog_title_addUser);
                 LayoutInflater inflater = this.getLayoutInflater();
                 userBuilder.setMessage(R.string._dialog_text_addUser);
                 userBuilder.setView(inflater.inflate(R.layout.dialog_textfield, null));
+
                 userBuilder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mLoadingDialog = new ProgressDialog(CarAddActivity.this);
                         mLoadingDialog.setIndeterminate(true);
                         mLoadingDialog.setCanceledOnTouchOutside(false);
-                        mLoadingDialog.setMessage("Exporting...");
+                        mLoadingDialog.setMessage("Try to add user...");
                         mLoadingDialog.show();
-
-                        addUserToCarList(new Callback() {
-                            @Override
-                            public void done(Exception e) {
-                                mLoadingDialog.dismiss();
-                                if (e == null) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getBaseContext(), "Exporting successful.", Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                } else {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getBaseContext(), "Exporting failed.", Toast.LENGTH_LONG).show();
-                                        }
-                                    });
+                        mTextFieldUser = (EditText) ((Dialog) dialogInterface).findViewById(R.id.dialog_textfield_username);
+                        if(mTextFieldUser != null) {
+                            App.database.linkDriverToCar(mTextFieldUser.getText().toString(), mNewCar.getLicensePlate(), new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    mLoadingDialog.dismiss();
+                                    if (e == null) {
+                                        initUserList();
+                                        Toast.makeText(CarAddActivity.this, "add user " + mTextFieldUser.getText().toString() + " successfully", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(CarAddActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        } else {
+                            mLoadingDialog.dismiss();
+                            Toast.makeText(CarAddActivity.this, "Error: no input", Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
                 userBuilder.setNegativeButton(R.string.dialog_cancle_button, new DialogInterface.OnClickListener() {
@@ -409,6 +422,33 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         super.onStop();
     }
 
+    @Override
+    public void onBackPressed() {
+        saveChanges();
+    }
+
+    public void saveChanges(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.dialog_title_exitWithoutSaving);
+        builder.setMessage(getString(R.string.dialog_text_exitWithoutSaving));
+        builder.setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                saveAndReturn();
+            }
+        });
+        builder.setNegativeButton(R.string.dialog_saveMissing_drop, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mNewCar = null;
+                finish();
+            }
+        });
+        builder.show();
+    }
+
     private void initForegroundDispatchMode() throws IntentFilter.MalformedMimeTypeException {
         Intent i = new Intent(this, getClass());
         i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -426,24 +466,6 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         if (mAdapter!= null) {
             mAdapter.enableForegroundDispatch(this, pi, filters, techList);
         }
-    }
-
-    private void addUserToCarList(final Callback callback){
-        AsyncTask task = new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] params) {
-
-                //TODO: Add User to ArrayList
-//                try {
-//
-//                    callback.done(null);
-//                } catch (IOException e) {
-//                    callback.done(e);
-//                }
-                return null;
-            }
-        };
-        task.execute();
     }
 
     public interface Callback {
