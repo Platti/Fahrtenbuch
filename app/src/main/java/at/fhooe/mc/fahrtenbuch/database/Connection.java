@@ -22,6 +22,8 @@ public interface Connection {
     public List<Car> getCars(Driver driver);
     public void getCars(Driver driver, FindCallback<Car> callback);
 
+    public void getDrivers(Car car, FindCallback<Driver> callback);
+
     public List<Trip> getTrips(Car car);
     public void getTrips(Car car, FindCallback<Trip> callback);
 

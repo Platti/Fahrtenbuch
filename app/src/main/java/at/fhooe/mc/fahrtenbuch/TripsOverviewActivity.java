@@ -2,6 +2,7 @@ package at.fhooe.mc.fahrtenbuch;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -58,10 +59,12 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
         App.database.getTrips(App.car, new FindCallback<Trip>() {
             @Override
             public void done(List<Trip> trips, ParseException e) {
-                if (e == null) {
+                if (e == null && trips.size() > 0) {
                     for (Trip trip : trips) {
                         adapter.add(trip);
                     }
+                } else {
+                    mLoadingDialog.dismiss();
                 }
             }
         });
@@ -104,6 +107,9 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
                                 Toast.makeText(getBaseContext(), "Exporting successful.", Toast.LENGTH_LONG).show();
                             }
                         });
+
+
+
                     } else {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -177,6 +183,15 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
                     Log.e("ExportCSV", "Finished export successfully");
 
                     callback.done(null);
+
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("message/rfc822");
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "Fahrtenbuch-Export: " + App.car.getLicensePlate());
+                    intent.putExtra(Intent.EXTRA_TEXT, "An overview of the trips of the car " + App.car.getLicensePlate() + " is added as an attachment!");
+                    intent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + filename));
+                    Intent mailer = Intent.createChooser(intent, null);
+                    startActivity(mailer);
+
                 } catch (IOException e) {
                     callback.done(e);
                 }

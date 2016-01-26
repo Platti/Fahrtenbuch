@@ -247,6 +247,22 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
     }
 
     /**
+     * Get all drivers linked to a car (asynchonous)
+     *
+     * @param car      car
+     * @param callback callback method to handle the result
+     */
+    @Override
+    public void getDrivers(Car car, FindCallback<Driver> callback) {
+        ParseQuery<DriverCarMapping> queryMapping = ParseQuery.getQuery(DriverCarMapping.class);
+        queryMapping.whereEqualTo("car", car.getLicensePlate());
+        ParseQuery<Driver> queryDriver = ParseQuery.getQuery(Driver.class);
+        queryDriver.whereMatchesKeyInQuery("username", "driver", queryMapping);
+
+        queryDriver.findInBackground(callback);
+    }
+
+    /**
      * Get all trips of a car (synchronous)
      *
      * @param car car
@@ -350,7 +366,7 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
      * @param newCar   car object to save, license plate and admin have to be set!
      * @param callback callback method: done(ParseException e)
      *                 possible ParseExceptions:   MISSING_OBJECT_ID (license plate or admin is missing)
-     *                 DUPLICATE_VALUE (license plate already taken)
+     *                 DUPLICATE_VALUE (license plate or nfc tag already taken)
      *                 CONNECTION_FAILED (no internet connection)
      */
     @Override
@@ -366,19 +382,48 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
                     if (e == null && car != null) {
                         callback.done(new ParseException(ParseException.DUPLICATE_VALUE, "license plate already taken"));
                     } else if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
-                        newCar.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    DriverCarMapping mapping = new DriverCarMapping();
-                                    mapping.setCar(newCar);
-                                    mapping.setDriver(newCar.getAdmin());
-                                    mapping.saveInBackground(callback);
-                                } else {
-                                    callback.done(e);
+                        if (newCar.hasNFC()) {
+                            ParseQuery<Car> query = ParseQuery.getQuery(Car.class);
+                            query.whereEqualTo("NFC", newCar.getNFC());
+                            query.getFirstInBackground(new GetCallback<Car>() {
+                                @Override
+                                public void done(Car car, ParseException e) {
+                                    if (e == null && car != null) {
+                                        callback.done(new ParseException(ParseException.DUPLICATE_VALUE, "nfc tag already taken"));
+                                    } else if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
+                                        newCar.saveInBackground(new SaveCallback() {
+                                            @Override
+                                            public void done(ParseException e) {
+                                                if (e == null) {
+                                                    DriverCarMapping mapping = new DriverCarMapping();
+                                                    mapping.setCar(newCar);
+                                                    mapping.setDriver(newCar.getAdmin());
+                                                    mapping.saveInBackground(callback);
+                                                } else {
+                                                    callback.done(e);
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        callback.done(e);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        } else {
+                            newCar.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    if (e == null) {
+                                        DriverCarMapping mapping = new DriverCarMapping();
+                                        mapping.setCar(newCar);
+                                        mapping.setDriver(newCar.getAdmin());
+                                        mapping.saveInBackground(callback);
+                                    } else {
+                                        callback.done(e);
+                                    }
+                                }
+                            });
+                        }
                     } else {
                         callback.done(e);
                     }
@@ -394,8 +439,8 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
      * @param driver   car object to save, license plate and admin have to be set!
      * @param callback callback method: done(ParseException e)
      *                 possible ParseExceptions:    OBJECT_NOT_FOUND (driver or car doesn't exist)
-     *                                              DUPLICATE_VALUE (mapping already exists)
-     *                                              CONNECTION_FAILED (no internet connection)
+     *                 DUPLICATE_VALUE (mapping already exists)
+     *                 CONNECTION_FAILED (no internet connection)
      */
     @Override
     public void linkDriverToCar(final String driver, final String car, final SaveCallback callback) {
