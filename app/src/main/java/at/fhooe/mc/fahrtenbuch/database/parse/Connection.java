@@ -3,6 +3,7 @@ package at.fhooe.mc.fahrtenbuch.database.parse;
 import android.app.Application;
 import android.util.Log;
 
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.Parse;
@@ -435,8 +436,8 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
     /**
      * Link an existing driver to an existing car
      *
-     * @param car      car object to save, license plate and admin have to be set!
-     * @param driver   car object to save, license plate and admin have to be set!
+     * @param car      car
+     * @param driver   driver
      * @param callback callback method: done(ParseException e)
      *                 possible ParseExceptions:    OBJECT_NOT_FOUND (driver or car doesn't exist)
      *                 DUPLICATE_VALUE (mapping already exists)
@@ -484,6 +485,23 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
 
                 } else if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
                     callback.done(new ParseException(ParseException.OBJECT_NOT_FOUND, "driver not found"));
+                } else {
+                    callback.done(e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void deleteMapping(String driver, String car, final DeleteCallback callback) {
+        ParseQuery<DriverCarMapping> queryMapping = ParseQuery.getQuery(DriverCarMapping.class);
+        queryMapping.whereEqualTo("driver", driver);
+        queryMapping.whereEqualTo("car", car);
+        queryMapping.getFirstInBackground(new GetCallback<DriverCarMapping>() {
+            @Override
+            public void done(DriverCarMapping driverCarMapping, ParseException e) {
+                if (e == null) {
+                    driverCarMapping.deleteInBackground(callback);
                 } else {
                     callback.done(e);
                 }
