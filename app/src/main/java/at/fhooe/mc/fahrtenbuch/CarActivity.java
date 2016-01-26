@@ -96,4 +96,10 @@ public class CarActivity extends ActionBarActivity implements View.OnClickListen
                 break;
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        App.car = null;
+    }
 }

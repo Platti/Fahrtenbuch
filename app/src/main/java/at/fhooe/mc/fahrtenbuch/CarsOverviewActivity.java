@@ -179,6 +179,7 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
 
     @Override
     public void onNewIntent(Intent _intent) {
+        App.car = null;
         readNFC(_intent);
     }
 
