@@ -24,4 +24,18 @@
     <string name="header_entitledUser">Entitled User</string>
     <string name="button_nfc">add NFC-tag</string>
     <string name="save_label">SAVE</string>
+    <string name="action_export">EXPORT</string>
+    <string name="msg_nfcon">NFC</string>
+    <string name="toast_message_add_new_nfc">read NFC-tag successfully</string>
+    <string name="dialog_ok_button">OK</string>
+    <string name="dialog_title_nfcReadIn">Read in NFC tag</string>
+    <string name="dialog_text_nfcReadIn">Hold device to the nfc tag to read in the id of it</string>
+    <string name="dialog_title_savaMissing">Not completed!</string>
+    <string name="dialog_text_saveMissing">Textfields are not completly filled.\nDo you want to fill it out or drop it?</string>
+    <string name="dialog_saveMissing_fillout">Fill out</string>
+    <string name="dialog_saveMissing_drop">Drop it</string>
+    <string name="dialog_title_addUser">Add enabled user</string>
+    <string name="_dialog_text_addUser">Give in the username, to give the user authorisation for the car</string>
+    <string name="dialog_cancle_button">Cancel</string>
+    <string name="button_nfc_change">Change NFC tag</string>
 </resources>

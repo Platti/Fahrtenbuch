@@ -4,24 +4,20 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="at.fhooe.mc.fahrtenbuch.CarsOverviewActivity"
-    android:id="@+id/nfc_activate_button">
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/nfc_activate_button"
-        android:id="@+id/button"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+    tools:context="at.fhooe.mc.fahrtenbuch.CarsOverviewActivity">
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/list_view_cars"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/button" />
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+"
+        android:id="@+id/add_new_car_button"
+        android:foregroundGravity="bottom|right"
+        android:layout_alignRight="@+id/list_view_cars"
+        android:layout_below="@+id/list_view_cars" />
 </RelativeLayout>

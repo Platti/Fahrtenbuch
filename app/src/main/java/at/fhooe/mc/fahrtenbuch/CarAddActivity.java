@@ -1,22 +1,53 @@
 
 package at.fhooe.mc.fahrtenbuch;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.support.v7.app.ActionBar;
+import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.Ndef;
+import android.nfc.tech.NfcA;
+import android.nfc.tech.NfcB;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.opencsv.CSVWriter;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.SaveCallback;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import at.fhooe.mc.fahrtenbuch.database.parse.Car;
+import at.fhooe.mc.fahrtenbuch.database.parse.Driver;
+import at.fhooe.mc.fahrtenbuch.database.parse.DriverCarMapping;
 
 public class CarAddActivity extends ActionBarActivity implements View.OnClickListener {
 
@@ -31,6 +62,14 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
     Button mNFCButton;
     TextView mAddUser;
 
+    NfcAdapter mAdapter;
+    AlertDialog mNfcReadInDialog;
+    ProgressDialog mLoadingDialog;
+
+    EditText mTextFieldUser;
+
+    public static List<Driver> mUserList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,39 +80,69 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         TextView entitledUser = (TextView) findViewById(R.id.header_entitledUser).findViewById(R.id.layout_header_txt);
         entitledUser.setText(R.string.header_entitledUser);
 
-        mNewCar = new Car();
 
         mTextFieldMake = (EditText) findViewById(R.id.textfield_make);
         mTextFieldModel = (EditText) findViewById(R.id.textfield_model);
         mTextFieldNumber = (EditText) findViewById(R.id.textfield_number);
         mTextFieldKilometers = (EditText) findViewById(R.id.textfield_kilometers);
+        mTextFieldUser = (EditText) findViewById(R.id.dialog_textfield_username);
 
         mNFCButton = (Button) findViewById(R.id.button_nfc);
         mNFCButton.setOnClickListener(this);
 
+        mUserList = new ArrayList<>();
+        final ListView listView = (ListView) findViewById(R.id.listEnabledUser);
+        final ListViewUserAdapter adapter = new ListViewUserAdapter(getBaseContext());
+        adapter.mActivity = this;
+
+        if(App.car == null){
+            mNewCar = new Car();
+        } else {
+            mNewCar = App.car;
+
+//        App.database.getDriverOfCar(App.driver, new FindCallback<Driver>() {
+//            @Override
+//            public void done(List<Driver> drivers, ParseException e) {
+//                if (e == null) {
+//                    for (Driver d : drivers) {
+//                        adapter.add(d);
+//                        mUserList.add(d);
+//                    }
+//                }
+//            }
+//        });
+
+            if(!App.car.getMake().equals("")){
+                mTextFieldMake.setText(App.car.getMake());
+            }
+
+            if(!App.car.getModel().equals("")){
+                mTextFieldModel.setText(App.car.getModel());
+            }
+            if(!App.car.getLicensePlate().equals("")){
+                mTextFieldNumber.setText(App.car.getLicensePlate());
+            }
+            if(App.car.getMileage() != 0){
+                mTextFieldKilometers.setText(String.valueOf(App.car.getMileage()));
+            }
+            if(App.car.getNFC() != null && !App.car.getNFC().equals("")){
+                mNFCButton.setText(R.string.button_nfc_change);
+            }
+        }
+
+        listView.setAdapter(adapter);
+
+
+
         mAddUser = (TextView) findViewById(R.id.action_add_new_user);
         mAddUser.setOnClickListener(this);
 
-    }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//
-//        View actionBarButtons = getLayoutInflater().inflate(R.layout.actionbar_save_button,
-//                new LinearLayout(mContext), false);
-//
-//        View doneActionView = actionBarButtons.findViewById(R.id.action_done);
-//        doneActionView.setOnClickListener(this);
-//
-//        ActionBar actionBar = this.getSupportActionBar();
-//
-//        if (actionBar != null) {
-//            actionBar.setCustomView(actionBarButtons);
-//            actionBar.setDisplayShowCustomEnabled(true);
-//        }
-//
-//        return super.onCreateOptionsMenu(menu);
-//    }
+
+        if (mAdapter!= null) {
+            mAdapter.disableForegroundDispatch(this);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -99,11 +168,59 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
 
                     mNewCar.setAdmin(App.driver);
                     mNewCar.setMake(make);
+                    mNewCar.setModel(modell);
                     mNewCar.setLicensePlate(number);
                     int milage = Integer.parseInt(km);
                     mNewCar.setMileage(milage);
-                    mNewCar.saveInBackground();
+                    mLoadingDialog = new ProgressDialog(CarAddActivity.this);
+                    mLoadingDialog.setIndeterminate(true);
+                    mLoadingDialog.setCanceledOnTouchOutside(false);
+                    mLoadingDialog.setMessage("Saving...");
+                    mLoadingDialog.show();
+                    App.database.addCar(mNewCar, new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                           mLoadingDialog.dismiss();
+                            if (e == null) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getBaseContext(), "New care saved in database", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            } else {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getBaseContext(), "Saving failed", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            }
+                        }
+                    });
+
+                    App.car = mNewCar;
+                    Intent returnIntent = new Intent();
+                    setResult(Activity.RESULT_OK, returnIntent);
                     finish();
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle(R.string.dialog_title_savaMissing);
+                    builder.setMessage(getString(R.string.dialog_text_saveMissing));
+                    builder.setPositiveButton(R.string.dialog_saveMissing_fillout, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    builder.setNegativeButton(R.string.dialog_saveMissing_drop, new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mNewCar = null;
+                            finish();
+                        }
+                    });
+                    builder.show();
                 }
 
                 break;
@@ -116,12 +233,196 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         switch (view.getId()){
 
             case R.id.button_nfc:
+                mAdapter = NfcAdapter.getDefaultAdapter(this);
+                if (!mAdapter.isEnabled()) {
+
+                    AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
+                    alertbox.setTitle("Info");
+                    alertbox.setMessage(getString(R.string.msg_nfcon));
+                    alertbox.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+                                startActivity(intent);
+                            } else {
+                                Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                                startActivity(intent);
+                            }
+                        }
+                    });
+                    alertbox.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    alertbox.show();
+
+                }
+                if (mAdapter.isEnabled()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle(R.string.dialog_title_nfcReadIn);
+                    builder.setMessage(R.string.dialog_text_nfcReadIn);
+                    builder.setNeutralButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    });
+                    try {
+                        initForegroundDispatchMode();
+                    } catch (IntentFilter.MalformedMimeTypeException e) {
+                        e.printStackTrace();
+                    }
+                    mNfcReadInDialog = builder.create();
+
+                    mNfcReadInDialog.show();
+                }
 
                 break;
             case R.id.action_add_new_user:
+                AlertDialog.Builder userBuilder = new AlertDialog.Builder(this);
+                userBuilder.setTitle(R.string.dialog_title_addUser);
+                LayoutInflater inflater = this.getLayoutInflater();
+                userBuilder.setMessage(R.string._dialog_text_addUser);
+                userBuilder.setView(inflater.inflate(R.layout.dialog_textfield, null));
+                userBuilder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mLoadingDialog = new ProgressDialog(CarAddActivity.this);
+                        mLoadingDialog.setIndeterminate(true);
+                        mLoadingDialog.setCanceledOnTouchOutside(false);
+                        mLoadingDialog.setMessage("Exporting...");
+                        mLoadingDialog.show();
 
+                        addUserToCarList(new Callback() {
+                            @Override
+                            public void done(Exception e) {
+                                mLoadingDialog.dismiss();
+                                if (e == null) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getBaseContext(), "Exporting successful.", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                } else {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getBaseContext(), "Exporting failed.", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+                userBuilder.setNegativeButton(R.string.dialog_cancle_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+
+                userBuilder.create().show();
                 break;
         }
     }
 
+    @Override
+    public void onNewIntent(Intent _intent) {
+        if (_intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
+            Log.i(this.getClass().toString(), "Found Tech TAG");
+        } else if (_intent.getAction().equals(NfcAdapter.ACTION_NDEF_DISCOVERED)) {
+            Log.i(this.getClass().toString(), "Found NDEF TAG");
+        } else if (_intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
+            Log.i(this.getClass().toString(), "Found tag TAG");
+        }
+        Tag tag = _intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        byte[] bID = tag.getId();
+        String id = convertToHexString(bID); // custom method to convert ID
+        mNewCar.setNFC(id);
+        Toast.makeText(CarAddActivity.this, R.string.toast_message_add_new_nfc, Toast.LENGTH_LONG).show();
+        mNfcReadInDialog.dismiss();
+
+        Toast.makeText(CarAddActivity.this, R.string.toast_message_add_new_nfc, Toast.LENGTH_LONG).show();
+
+        Log.i(this.getClass().toString(), "Id: " + id + "yeayea");
+    }
+
+
+    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    public static String convertToHexString(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mAdapter!= null) {
+            mAdapter.disableForegroundDispatch(this);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mAdapter!= null) {
+            mAdapter.disableForegroundDispatch(this);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    private void initForegroundDispatchMode() throws IntentFilter.MalformedMimeTypeException {
+        Intent i = new Intent(this, getClass());
+        i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
+        IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
+        IntentFilter tech = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
+        IntentFilter tag = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        ndef.addDataType("*/*");
+        IntentFilter[] filters = new IntentFilter[]{ndef, tech, tag};
+        String[][] techList = new String[][]{
+                new String[]{Ndef.class.getName()},
+                new String[]{NfcA.class.getName()},
+                new String[]{NfcB.class.getName()}}; // extend if necessary
+
+        if (mAdapter!= null) {
+            mAdapter.enableForegroundDispatch(this, pi, filters, techList);
+        }
+    }
+
+    private void addUserToCarList(final Callback callback){
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+
+                //TODO: Add User to ArrayList
+//                try {
+//
+//                    callback.done(null);
+//                } catch (IOException e) {
+//                    callback.done(e);
+//                }
+                return null;
+            }
+        };
+        task.execute();
+    }
+
+    public interface Callback {
+        public void done(Exception e);
+    }
 }
