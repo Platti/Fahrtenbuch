@@ -247,6 +247,22 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
     }
 
     /**
+     * Get all drivers linked to a car (asynchonous)
+     *
+     * @param car   car
+     * @param callback callback method to handle the result
+     */
+    @Override
+    public void getDrivers(Car car, FindCallback<Driver> callback) {
+        ParseQuery<DriverCarMapping> queryMapping = ParseQuery.getQuery(DriverCarMapping.class);
+        queryMapping.whereEqualTo("car", car.getLicensePlate());
+        ParseQuery<Driver> queryDriver = ParseQuery.getQuery(Driver.class);
+        queryDriver.whereMatchesKeyInQuery("username", "driver", queryMapping);
+
+        queryDriver.findInBackground(callback);
+    }
+
+    /**
      * Get all trips of a car (synchronous)
      *
      * @param car car
@@ -394,8 +410,8 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
      * @param driver   car object to save, license plate and admin have to be set!
      * @param callback callback method: done(ParseException e)
      *                 possible ParseExceptions:    OBJECT_NOT_FOUND (driver or car doesn't exist)
-     *                                              DUPLICATE_VALUE (mapping already exists)
-     *                                              CONNECTION_FAILED (no internet connection)
+     *                 DUPLICATE_VALUE (mapping already exists)
+     *                 CONNECTION_FAILED (no internet connection)
      */
     @Override
     public void linkDriverToCar(final String driver, final String car, final SaveCallback callback) {
