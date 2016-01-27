@@ -41,6 +41,7 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
     public void test() {
         final String TAG = "TestingDatabase";
 
+        /*
         Log.e(TAG, "Decrypted: password --- Encrypted: " + MD5.encrypt("password"));
 
         // -----------------------------------------------------------------------------------------
@@ -152,7 +153,7 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
         });
 
 
-
+        */
         /*
         ParseObject testTrip = new ParseObject("Trip");
         testTrip.put("driver", "jondoe");
@@ -173,6 +174,19 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
 
         testTrip.saveInBackground();
         */
+
+
+        linkDriverToCar("jondoe", "FR-TEST3", new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e==null){
+                    Log.e(TAG, "No exception!");
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     /**
