@@ -62,14 +62,16 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
                             mCarList.add(car);
 
                         }
-                        Car car = findCarWithNFCId(App.nfcId);
-                        if (car != null) {
-                            App.car = car;
+                        if (App.nfcId != null) {
+                            Car car = findCarWithNFCId(App.nfcId);
+                            if (car != null) {
+                                App.car = car;
 
-                            Intent i = new Intent(CarsOverviewActivity.this, CarActivity.class);
-                            startActivity(i);
-                        } else {
-                            Toast.makeText(CarsOverviewActivity.this, "Nfc doesn't work " + App.nfcId, Toast.LENGTH_LONG).show();
+                                Intent i = new Intent(CarsOverviewActivity.this, CarActivity.class);
+                                startActivity(i);
+                            } else {
+                                Toast.makeText(CarsOverviewActivity.this, "Nfc doesn't work " + App.nfcId, Toast.LENGTH_LONG).show();
+                            }
                         }
                     }
                 }
@@ -183,8 +185,8 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
         readNFC(_intent);
     }
 
-    public void readNFC(Intent _intent){
-        if(_intent != null) {
+    public void readNFC(Intent _intent) {
+        if (_intent != null) {
             if (_intent.getAction() != null && (_intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED) || _intent.getAction().equals(NfcAdapter.ACTION_NDEF_DISCOVERED) || _intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED))) {
                 if (_intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
                     Log.i(this.getClass().toString(), "Found Tech TAG");
@@ -315,7 +317,6 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
     protected void onDestroy() {
         super.onDestroy();
     }
-
 
 
 }
