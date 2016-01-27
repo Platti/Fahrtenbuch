@@ -49,6 +49,8 @@ public class CarActivity extends ActionBarActivity implements View.OnClickListen
 
         if(!App.driver.getUsername().equals(App.car.getAdmin())){
             findViewById(R.id.menu_car_settings).setVisibility(View.GONE);
+        if (!App.driver.getUsername().equals(App.car.getAdmin())) {
+            button.setVisibility(View.GONE);
         } else {
             findViewById(R.id.menu_car_settings).setVisibility(View.VISIBLE);
             findViewById(R.id.menu_car_settings).setOnClickListener(this);
@@ -86,6 +88,8 @@ public class CarActivity extends ActionBarActivity implements View.OnClickListen
             startActivity(i);
             finish();
             return true;
+        } else if (id == android.R.id.home) {
+            onBackPressed();
         } else if (id == R.id.action_test1) {
             App.database.test();
         } else if (id == R.id.action_test2) {
@@ -107,6 +111,8 @@ public class CarActivity extends ActionBarActivity implements View.OnClickListen
         Intent i;
         switch (view.getId()){
             case R.id.menu_start_ride:
+        switch (view.getId()) {
+            case R.id.button_start_ride:
                 i = new Intent(CarActivity.this, MapsActivity.class);
                 startActivity(i);
                 break;
@@ -130,6 +136,11 @@ public class CarActivity extends ActionBarActivity implements View.OnClickListen
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    public void onBackPressed() {
         App.car = null;
+        super.onBackPressed();
     }
 }
