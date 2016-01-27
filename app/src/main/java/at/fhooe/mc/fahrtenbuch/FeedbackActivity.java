@@ -16,16 +16,20 @@ import android.widget.Toast;
 import com.parse.ParseException;
 import com.parse.SaveCallback;
 
+import org.w3c.dom.Text;
+
 import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
 
 public class FeedbackActivity extends Activity implements View.OnClickListener {
     private int selected = -1;
-
+    Trip mTrip = App.trip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
+
+        setTitle("Feedback");
 
         ImageButton b = null;
 
@@ -43,6 +47,9 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
         Button q = null;
         q = (Button) findViewById(R.id.button_saveTrip);
         q.setOnClickListener(this);
+
+        TextView textViewMileage = (TextView) findViewById(R.id.textView_mileageFeed);
+        textViewMileage.setText(String.valueOf(App.car.getMileage() + mTrip.getDistance()));
     }
 
     @Override
@@ -58,8 +65,6 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
         ImageButton b3 = null;
         ImageButton b4 = null;
         ImageButton b5 = null;
-
-
 
         b1 = (ImageButton) findViewById(R.id.button_smiley1);
 
@@ -103,8 +108,8 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
                 break;
             }
             case R.id.button_saveTrip: {
-                Trip trip = App.trip;
-                trip.setFeedback(selected);
+
+                mTrip.setFeedback(selected);
 
                 TextView description = (TextView)findViewById(R.id.textView_description);
 
@@ -113,13 +118,31 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
                 } else if (selected == -1) {
                     Toast.makeText(FeedbackActivity.this, "Choose feedback!", Toast.LENGTH_SHORT).show();
                 } else {
-                    trip.setDescription(String.valueOf(description.getText()));
 
-                    trip.saveEventually(new SaveCallback() {
+                    TextView mileageText = (TextView)findViewById(R.id.textView_mileageFeed);
+
+                    if (!(String.valueOf(App.car.getMileage() + mTrip.getDistance()).equals(mileageText.getText()))) {
+                        App.car.setMileage(Integer.valueOf(String.valueOf(mileageText.getText())));
+                    }
+
+                    mTrip.setDescription(String.valueOf(description.getText()));
+
+                    mTrip.saveEventually(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
                                 Toast.makeText(FeedbackActivity.this, "Trip saved", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(FeedbackActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+                    App.car.saveEventually(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                Log.d("Fahrtenbuch", "Car saved!");
                             } else {
                                 Toast.makeText(FeedbackActivity.this, "Error", Toast.LENGTH_SHORT).show();
                             }

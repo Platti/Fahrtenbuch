@@ -97,6 +97,23 @@
             android:layout_centerVertical="true"
             android:inputType="textPersonName" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Mileage"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_above="@+id/textView_description"
+            android:layout_marginTop="10dp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView_mileageFeed"
+            android:layout_centerVertical="true"
+            android:inputType="textPersonName" />
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -105,7 +122,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginTop="150dp" />
+            android:layout_marginTop="50dp" />
 
     </LinearLayout>
 

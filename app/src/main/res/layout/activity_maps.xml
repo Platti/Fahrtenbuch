@@ -34,5 +34,24 @@
         android:gravity="center"
         android:textStyle="bold"
         android:textSize="60dp" />
-    
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/textField_mileage"
+        android:layout_alignBottom="@+id/textView_distance"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Mileage:"
+        android:id="@+id/textView_mileage"
+        android:layout_above="@+id/textField_mileage"
+        android:layout_alignLeft="@+id/textField_mileage"
+        android:layout_alignStart="@+id/textField_mileage" />
+
 </RelativeLayout>
