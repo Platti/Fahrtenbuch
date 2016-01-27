@@ -27,8 +27,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:id="@+id/imageView2"
-                android:src="@mipmap/ic_launcher"
-                android:layout_margin="5dp" />
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:src="@drawable/fahrtenbuch_dark_small" />
 
             <LinearLayout
                 android:orientation="vertical"
@@ -73,7 +74,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/button_nfc"
-            android:id="@+id/button_nfc" />
+            android:id="@+id/button_nfc"
+            style="@style/MyButtonStyle" />
 
 
     </LinearLayout>
@@ -94,7 +96,9 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/textview_add_user"
             android:textSize="25dp"
-            android:id="@+id/action_add_new_user" />
+            android:id="@+id/action_add_new_user"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
 
         <ListView
             android:layout_width="match_parent"

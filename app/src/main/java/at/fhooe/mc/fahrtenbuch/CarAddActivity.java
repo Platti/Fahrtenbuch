@@ -98,6 +98,7 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
             mNewCar = new Car();
         } else {
             mNewCar = App.car;
+            setTitle(R.string.title_activity_car_settings);
 
             initUserList();
 

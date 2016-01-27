@@ -1,8 +1,54 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme"
+        parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+
+        <!-- Support library compatibility -->
+        <item name="actionBarStyle">@style/MyActionBar</item>
     </style>
 
+    <!-- ActionBar styles -->
+    <style name="MyActionBar"
+        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/color_main</item>
+
+        <!-- Support library compatibility -->
+        <item name="background">@color/color_main</item>
+    </style>
+    
+    <style name="MyButtonStyle">
+        <item name="android:background">@drawable/button_round</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:minWidth">88dp</item>
+        <item name="android:minHeight">50dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:elevation">1dp</item>
+        <item name="android:translationZ">1dp</item>
+
+        <!-- Support library compatibility -->
+        <item name="background">@drawable/button_round</item>
+    </style>
+
+    <style name="ListItemStyle">
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+    </style>
+
+    <style name="MyMenuItem">
+        <item name="android:background">@drawable/click_background</item>
+    </style>
+
+    <style name="background_gray">
+        <item name="android:background">@color/gray</item>
+    </style>
+
+
+    <color name="color_main">#00897B</color>
+    <color name="color_accent">#004D40</color>
+    <color name="white">#ffffff</color>
+    <color name="gray">#e0e0e0</color>
 </resources>

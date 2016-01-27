@@ -12,7 +12,7 @@
         android:paddingLeft="50dp"
         android:paddingRight="50dp">
 
-        <ImageView android:src="@drawable/fahrtenbuch"
+        <ImageView android:src="@drawable/fahrtenbuch_dark"
             android:layout_width="wrap_content"
             android:layout_height="72dp"
             android:layout_marginBottom="24dp"
@@ -44,7 +44,8 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginBottom="20dp"
+            style="@style/MyButtonStyle"/>
 
         <TextView android:id="@+id/link_register"
             android:layout_width="fill_parent"

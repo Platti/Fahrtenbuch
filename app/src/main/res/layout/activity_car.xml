@@ -12,31 +12,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <Button
+        <include
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/button_start_ride"
-            android:id="@+id/button_start_ride"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="3pt"
-            android:layout_marginTop="3pt" />
+            layout="@layout/layout_menu_item"
+            android:id="@+id/menu_start_ride"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" />
 
-        <Button
+        <include
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/button_show_rides"
-            android:id="@+id/button_show_rides"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="3pt"
-            android:layout_marginBottom="3pt" />
+            layout="@layout/layout_menu_item"
+            android:id="@+id/menu_show_rides"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" />
 
-        <Button
+        <include
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/action_settings"
-            android:id="@+id/button_car_settings"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="3pt"
-            android:layout_marginBottom="3pt" />
+            layout="@layout/layout_menu_item"
+            android:id="@+id/menu_car_settings"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" />
     </LinearLayout>
 </RelativeLayout>

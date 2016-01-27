@@ -23,7 +23,7 @@
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:icon="@drawable/fahrtenbuch"
+        android:icon="@drawable/fahrtenbuch_dark"
         android:label="@string/app_name"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme">
