@@ -74,11 +74,6 @@ public class LocationBackgroundService extends Service implements com.google.and
         startLocationUpdates();
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
     protected void startLocationUpdates() {
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
@@ -108,5 +103,9 @@ public class LocationBackgroundService extends Service implements com.google.and
 
     }
 
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
 
 }
