@@ -76,7 +76,8 @@
         <activity
             android:name=".CarsOverviewActivity"
             android:label="@string/title_activity_cars_overview"
-            android:launchMode="singleTask"></activity>
+            android:launchMode="singleTask">
+        </activity>
         <!-- <activity-alias -->
         <!-- android:name="nfc_filter" -->
         <!-- android:enabled="true" -->

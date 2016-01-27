@@ -112,7 +112,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/textView_mileageFeed"
             android:layout_centerVertical="true"
-            android:inputType="numberDecimal" />
+            android:inputType="number" />
 
         <Button
             android:layout_width="wrap_content"
