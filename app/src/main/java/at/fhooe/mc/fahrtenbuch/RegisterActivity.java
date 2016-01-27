@@ -60,38 +60,38 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
 
 
         if (username.getText().toString().isEmpty() || username.getText().toString().length() < 6) {
-            username.setError("at least 6 characters");
+            username.setError(getString(R.string.at_least_6_characters));
             valid = false;
         } else if (username.getText().toString().contains(" ")) {
-            username.setError("must not contain spaces");
+            username.setError(getString(R.string.must_not_contain_spaces));
             valid = false;
         } else {
             username.setError(null);
         }
 
         if (password1.getText().toString().isEmpty() || password1.getText().toString().length() < 6) {
-            password1.setError("at least 6 characters");
+            password1.setError(getString(R.string.at_least_6_characters));
             valid = false;
         } else {
             password1.setError(null);
         }
 
         if (!password1.getText().toString().equals(password2.getText().toString())) {
-            password2.setError("password not confirmed");
+            password2.setError(getString(R.string.password_not_confirmed));
             valid = false;
         } else {
             password2.setError(null);
         }
 
         if (firstName.getText().toString().isEmpty()) {
-            firstName.setError("please enter your first name");
+            firstName.setError(getString(R.string.please_enter_your_first_name));
             valid = false;
         } else {
             firstName.setError(null);
         }
 
         if (lastName.getText().toString().isEmpty()) {
-            lastName.setError("please enter your last name");
+            lastName.setError(getString(R.string.please_enter_your_last_name));
             valid = false;
         } else {
             lastName.setError(null);
@@ -107,7 +107,7 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
         }
 
         if (mBirthday == null || Calendar.getInstance().compareTo(mBirthday) < 0) {
-            birthday.setError("invalid input");
+            birthday.setError(getString(R.string.invalid_input));
             valid = false;
         } else {
             birthday.setError(null);
@@ -130,7 +130,7 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
                 final ProgressDialog progressDialog = new ProgressDialog(RegisterActivity.this, R.style.Base_Theme_AppCompat_Dialog);
                 progressDialog.setIndeterminate(true);
                 progressDialog.setCancelable(false);
-                progressDialog.setMessage("Creating new account...");
+                progressDialog.setMessage(getString(R.string.creating_new_account));
                 progressDialog.show();
 
                 final Driver newUser = buildDriverObject();
@@ -147,9 +147,9 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
                         } else if (e.getCode() == ParseException.USERNAME_TAKEN) {
                             ((EditText) findViewById(R.id.register_username)).setError(e.getMessage());
                         } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
-                            Toast.makeText(getBaseContext(), "No connection to the server!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getBaseContext(), getString(R.string.no_connection_to_the_server), Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(getBaseContext(), "Error " + e.getCode() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getBaseContext(), getString(R.string.error) + " " + e.getCode() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
                 });

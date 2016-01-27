@@ -71,6 +71,6 @@ public class Car extends ParseObject {
 
     @Override
     public String toString() {
-        return getLicensePlate() + ": " + getMake() + " " + getModel() + " (" + getAdmin() + ")" + " " + getMileage() + "km";
+        return getLicensePlate() + ": " + getMake() + " " + getModel();
     }
 }

@@ -41,12 +41,14 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trips_overview);
 
+        setTitle(App.car.toString());
+
         mLoadingStatus = 0;
 
         mLoadingDialog = new ProgressDialog(TripsOverviewActivity.this, R.style.Base_Theme_AppCompat_Dialog);
         mLoadingDialog.setIndeterminate(true);
         mLoadingDialog.setCanceledOnTouchOutside(false);
-        mLoadingDialog.setMessage("Loading...");
+        mLoadingDialog.setMessage(getString(R.string.loading));
         mLoadingDialog.show();
 
 //        mLoadingSpinner = (ProgressBar) findViewById(R.id.progressBar_loading_trips);
@@ -93,7 +95,7 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
             mLoadingDialog = new ProgressDialog(TripsOverviewActivity.this, R.style.Base_Theme_AppCompat_Dialog);
             mLoadingDialog.setIndeterminate(true);
             mLoadingDialog.setCanceledOnTouchOutside(false);
-            mLoadingDialog.setMessage("Exporting...");
+            mLoadingDialog.setMessage(getString(R.string.exporting));
             mLoadingDialog.show();
 
             exportTripsToCSV(new Callback() {
@@ -104,7 +106,7 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getBaseContext(), "Exporting successful.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getBaseContext(), getString(R.string.exporting_successful), Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -114,7 +116,7 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getBaseContext(), "Exporting failed.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getBaseContext(), getString(R.string.exporting_failed), Toast.LENGTH_LONG).show();
                             }
                         });
                     }
@@ -186,8 +188,8 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
 
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setType("message/rfc822");
-                    intent.putExtra(Intent.EXTRA_SUBJECT, "Fahrtenbuch-Export: " + App.car.getLicensePlate());
-                    intent.putExtra(Intent.EXTRA_TEXT, "An overview of the trips of the car " + App.car.getLicensePlate() + " is added as an attachment!");
+                    intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.fahrtenbuch_export) + App.car.getLicensePlate());
+                    intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.an_overview_of_the_trips_of_the_car) + " " + App.car.getLicensePlate() + " " + getString(R.string.is_attached_to_this_mail));
                     intent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + filename));
                     Intent mailer = Intent.createChooser(intent, null);
                     startActivity(mailer);

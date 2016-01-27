@@ -53,7 +53,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Vie
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.Base_Theme_AppCompat_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
-        progressDialog.setMessage("Authenticating...");
+        progressDialog.setMessage(getString(R.string.authenticating));
         progressDialog.show();
 
         App.database.loginUser(_username, _password, new GetCallback<Driver>() {
@@ -69,16 +69,16 @@ public class LoginActivity extends Activity implements View.OnClickListener, Vie
                     editor.putString(App.SP_LAST_LOGIN_PASSWORD, _password);
                     editor.apply();
                     // Open Cars Overview
-                    Toast.makeText(getBaseContext(), "Hello " + driver.toString() + "!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), getString(R.string.hello) + " " + driver.toString() + "!", Toast.LENGTH_LONG).show();
                     Intent i = new Intent(LoginActivity.this, CarsOverviewActivity.class);
                     startActivity(i);
                     finish();
                 } else if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
-                    Toast.makeText(getBaseContext(), "Wrong username or password!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), getString(R.string.wrong_username_or_password), Toast.LENGTH_LONG).show();
                 } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
-                    Toast.makeText(getBaseContext(), "No connection to the server!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), getString(R.string.no_connection_to_the_server), Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(getBaseContext(), "Error " + e.getCode() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), getString(R.string.error) + " " + e.getCode() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 EditText et = (EditText) findViewById(R.id.login_password);
                 et.setText("");
