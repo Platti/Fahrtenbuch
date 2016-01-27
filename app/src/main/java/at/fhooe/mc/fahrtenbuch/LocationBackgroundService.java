@@ -48,6 +48,13 @@ public class LocationBackgroundService extends Service implements com.google.and
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("Fahrtenbuch", "onDestroy service!!");
+        stopLocationUpdates();
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         return null;
@@ -106,6 +113,11 @@ public class LocationBackgroundService extends Service implements com.google.and
     @Override
     public void onConnectionSuspended(int i) {
 
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
     }
 
 }
