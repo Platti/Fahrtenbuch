@@ -70,7 +70,7 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
                                 Intent i = new Intent(CarsOverviewActivity.this, CarActivity.class);
                                 startActivity(i);
                             } else {
-                                Toast.makeText(CarsOverviewActivity.this, "Nfc doesn't work " + App.nfcId, Toast.LENGTH_LONG).show();
+                                Toast.makeText(CarsOverviewActivity.this, R.string.nfc_not  + App.nfcId, Toast.LENGTH_LONG).show();
                             }
                         }
                     }
@@ -85,9 +85,9 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
             if (mAdapter != null && !mAdapter.isEnabled()) {
 
                 AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
-                alertbox.setTitle("Info");
+                alertbox.setTitle(R.string.info);
                 alertbox.setMessage(getString(R.string.msg_nfcon));
-                alertbox.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
+                alertbox.setPositiveButton(R.string.turn_on, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -99,7 +99,7 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
                         }
                     }
                 });
-                alertbox.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                alertbox.setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
