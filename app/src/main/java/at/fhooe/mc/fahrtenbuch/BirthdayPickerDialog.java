@@ -13,9 +13,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+/**
+ * Dialog to pick a date (birthday)
+ */
 public class BirthdayPickerDialog extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
 
+    /**
+     * open a DatePickerDialog and set the date to the chosen date or 01.01.1990
+     *
+     * @param _savedInstanceState
+     * @return new dialog
+     */
     @Override
     public Dialog onCreateDialog(Bundle _savedInstanceState) {
         DatePickerDialog dialog;
@@ -31,6 +40,15 @@ public class BirthdayPickerDialog extends DialogFragment
         return dialog;
     }
 
+    /**
+     * save the date in the text field
+     *
+     * @param _view  focused view
+     * @param _year  year
+     * @param _month month
+     * @param _day   day
+     */
+    @Override
     public void onDateSet(DatePicker _view, int _year, int _month, int _day) {
         TextView tv = (TextView) getActivity().findViewById(R.id.register_birthday);
         Log.e("BirthdayPicker-dateset1", _year + "/" + _month + "/" + _day);

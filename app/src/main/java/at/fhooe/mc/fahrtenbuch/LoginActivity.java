@@ -18,10 +18,22 @@ import com.parse.ParseException;
 import at.fhooe.mc.fahrtenbuch.database.MD5;
 import at.fhooe.mc.fahrtenbuch.database.parse.Driver;
 
+/**
+ * Activity to login (Launcher activity)
+ */
 public class LoginActivity extends Activity implements View.OnClickListener, View.OnKeyListener {
 
+    /**
+     * Request code when calling RegisterActivity
+     */
     public static final int REGISTER_REQUEST_CODE = 123;
 
+    /**
+     * onCreate()
+     * set listeners to buttons/keys
+     *
+     * @param _savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle _savedInstanceState) {
         super.onCreate(_savedInstanceState);
@@ -37,6 +49,10 @@ public class LoginActivity extends Activity implements View.OnClickListener, Vie
         tv.setOnClickListener(this);
     }
 
+    /**
+     * onResume()
+     * try to login with last logged in credentials
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -49,6 +65,12 @@ public class LoginActivity extends Activity implements View.OnClickListener, Vie
         }
     }
 
+    /**
+     * login user
+     *
+     * @param _username username
+     * @param _password password
+     */
     public void login(final String _username, final String _password) {
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.Base_Theme_AppCompat_Dialog);
         progressDialog.setIndeterminate(true);
@@ -87,6 +109,11 @@ public class LoginActivity extends Activity implements View.OnClickListener, Vie
         });
     }
 
+    /**
+     * Button.onClick()
+     *
+     * @param _v button clicked
+     */
     @Override
     public void onClick(View _v) {
         if (_v.getId() == R.id.button_login) {
@@ -101,6 +128,14 @@ public class LoginActivity extends Activity implements View.OnClickListener, Vie
         }
     }
 
+    /**
+     * listen to "OK" in password text field to login the user without pressing the login button
+     *
+     * @param _v       focused text field
+     * @param _keyCode pressed key
+     * @param _event   key event
+     * @return true if the listener has consumed the event, false otherwise
+     */
     @Override
     public boolean onKey(View _v, int _keyCode, KeyEvent _event) {
         if (_v.getId() == R.id.login_password) {
@@ -116,6 +151,13 @@ public class LoginActivity extends Activity implements View.OnClickListener, Vie
         return false;
     }
 
+    /**
+     * login new user after creating an account
+     *
+     * @param _requestCode request code (REGISTER_REQUEST_CODE)
+     * @param _resultCode  result code (RESULT_OK)
+     * @param _data        data passed (username and encrypted password)
+     */
     @Override
     protected void onActivityResult(int _requestCode, int _resultCode, Intent _data) {
         if (_requestCode == REGISTER_REQUEST_CODE) {
