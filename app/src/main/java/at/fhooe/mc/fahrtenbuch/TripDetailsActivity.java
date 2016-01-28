@@ -77,7 +77,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         TextView driverText = (TextView) findViewById(R.id.textView_driver);
         driverText.setText(mTrip.getDriver());
         TextView distanceText = (TextView) findViewById(R.id.textView_distance);
-        distanceText.setText(String.valueOf(mTrip.getDistance()) + R.string.kilometer_short);
+        distanceText.setText(String.valueOf(mTrip.getDistance()) + getString(R.string.kilometer_short));
         TextView descriptionText = (TextView) findViewById(R.id.textView_description);
         descriptionText.setText(mTrip.getDescription());
         TextView weatherText = (TextView) findViewById(R.id.textView_weather);
@@ -107,7 +107,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
 
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_edit_trip);
-        dialog.setTitle(R.string.edit_trip + mTrip.getStartTime().toLocaleString().split(" ")[0]);
+        dialog.setTitle(getString(R.string.edit_trip) + mTrip.getStartTime().toLocaleString().split(" ")[0]);
 
         final EditText etDistance = (EditText) dialog.findViewById(R.id.edit_trip_distance);
         etDistance.setText(String.valueOf(mTrip.getDistance()));
