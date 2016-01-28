@@ -191,7 +191,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
 //        etDescription.setText(mTrip.getDescription());
 
 
-        editBuilder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
+        editBuilder.setPositiveButton(R.string.save_label, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
