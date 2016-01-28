@@ -67,7 +67,10 @@ public class ListViewTripsAdapter extends ArrayAdapter<Trip> {
         tv.setText(trip.getDriver());
 
         tv = (TextView) _view.findViewById(R.id.trip_distance);
-        tv.setText(trip.getDistance() + R.string.kilometer_short);
+        String s = String.valueOf(trip.getDistance()) + mActivity.getString(R.string.kilometer_short);
+        Log.i("Fahrtenbuch", String.valueOf(trip.getDistance()) + "Kilometer?");
+        Log.i("Fahrtenbuch", mActivity.getString(R.string.kilometer_short));
+        tv.setText(s);
 
 
         ImageView iv = (ImageView) _view.findViewById(R.id.trip_weather);
