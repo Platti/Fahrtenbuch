@@ -77,7 +77,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         TextView driverText = (TextView) findViewById(R.id.textView_driver);
         driverText.setText(mTrip.getDriver());
         TextView distanceText = (TextView) findViewById(R.id.textView_distance);
-        distanceText.setText(String.valueOf(mTrip.getDistance()) + " km");
+        distanceText.setText(String.valueOf(mTrip.getDistance()) + R.string.kilometer_short);
         TextView descriptionText = (TextView) findViewById(R.id.textView_description);
         descriptionText.setText(mTrip.getDescription());
         TextView weatherText = (TextView) findViewById(R.id.textView_weather);
@@ -98,42 +98,8 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        Intent i = null;
-        switch (id){
-            case android.R.id.home:
-                onBackPressed();
-                break;
-            case R.id.action_logout:
-                App.driver = null;
-                // Delete last login in shared preferences
-                SharedPreferences sp = getSharedPreferences(App.SHARED_PREFERENCES, MODE_PRIVATE);
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putString(App.SP_LAST_LOGIN_USERNAME, null);
-                editor.putString(App.SP_LAST_LOGIN_PASSWORD, null);
-                editor.commit();
-                // close activity and show login activity
-                i = new Intent(TripDetailsActivity.this, LoginActivity.class);
-                startActivity(i);
-                finish();
-                break;
-            case R.id.action_user_settings:
-                i = new Intent(TripDetailsActivity.this, UserSettingsActivity.class);
-                startActivity(i);
-                break;
-            case R.id.action_car_settings:
-                i = new Intent(TripDetailsActivity.this, CarAddActivity.class);
-                startActivity(i);
-                break;
-            case R.id.action_edit:
-                if(App.car.isAdmin(App.driver)){
-                    openEditDialog();
-                } else {
-                    Toast.makeText(this, "Only the admin is allowed to edit trips!", Toast.LENGTH_LONG).show();
-                }
-                break;
 
 
-        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -141,7 +107,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
 
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_edit_trip);
-        dialog.setTitle("Edit trip of " + mTrip.getStartTime().toLocaleString().split(" ")[0]);
+        dialog.setTitle(R.string.edit_trip + mTrip.getStartTime().toLocaleString().split(" ")[0]);
 
         final EditText etDistance = (EditText) dialog.findViewById(R.id.edit_trip_distance);
         etDistance.setText(String.valueOf(mTrip.getDistance()));
@@ -180,20 +146,20 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        GoogleMap map = googleMap;
 
         LatLng lastPoint = new LatLng(mPointList.get(mPointList.size() - 1).getLatitude(), mPointList.get(mPointList.size() - 1).getLongitude());
 
-        mMap.addMarker(new MarkerOptions().position(lastPoint));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastPoint, 10));
+        map.addMarker(new MarkerOptions().position(lastPoint));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(lastPoint, 10));
 
 
         for (int i = 0; i < mPointList.size() - 1; i++) {
             ParseGeoPoint src = mPointList.get(i);
             ParseGeoPoint dest = mPointList.get(i + 1);
 
-            // mMap is the Map Object
-            Polyline line = mMap.addPolyline(
+            // map is the Map Object
+            Polyline line = map.addPolyline(
                     new PolylineOptions().add(
                             new LatLng(src.getLatitude(), src.getLongitude()),
                             new LatLng(dest.getLatitude(), dest.getLongitude())

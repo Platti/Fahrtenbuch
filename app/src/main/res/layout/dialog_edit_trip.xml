@@ -17,7 +17,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Distance:"
+                    android:text="@string/distance"
                     android:id="@+id/edit_trip_distance_header"
                     android:padding="5dp" />
 
@@ -38,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Weather:"
+                    android:text="@string/weather"
                     android:id="@+id/edit_trip_weather_header"
                     android:padding="5dp" />
 
@@ -59,7 +59,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Description:"
+                    android:text="@string/description"
                     android:id="@+id/edit_trip_description_header"
                     android:padding="5dp" />
 
@@ -82,14 +82,14 @@
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Save"
+            android:text="@string/save_label"
             android:id="@+id/edit_trip_save"
             android:layout_weight="1" />
 
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Cancel"
+            android:text="@string/dialog_cancle_button"
             android:id="@+id/edit_trip_cancel"
             android:layout_weight="1" />
     </LinearLayout>

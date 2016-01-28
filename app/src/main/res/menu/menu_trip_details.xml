@@ -28,4 +28,6 @@
         android:orderInCategory="100"
         android:icon="@drawable/ic_action_action_settings_white"
         app:showAsAction="never" />
+    <item android:id="@+id/action_edit" android:title="@string/edit"
+        android:orderInCategory="100" app:showAsAction="always" />
 </menu>
