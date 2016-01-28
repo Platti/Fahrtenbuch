@@ -24,13 +24,32 @@ import java.util.Locale;
 import at.fhooe.mc.fahrtenbuch.database.Weather;
 import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
 
+/**
+ * array adapter for trips
+ */
 public class ListViewTripsAdapter extends ArrayAdapter<Trip> {
+    /**
+     * parent activity
+     */
     public Activity mActivity;
 
+    /**
+     * constructor
+     *
+     * @param context context
+     */
     public ListViewTripsAdapter(Context context) {
         super(context, -1);
     }
 
+    /**
+     * create list element
+     *
+     * @param _pos    position
+     * @param _view   view
+     * @param _parent parent
+     * @return new view
+     */
     @Override
     public View getView(int _pos, View _view, ViewGroup _parent) {
         if (_view == null) {
