@@ -110,4 +110,11 @@
     <string name="car_settings">Car Settings</string>
     <string name="user_settings">Car Settings</string>
     <string name="logout">Logout</string>
+    <string name="text_username">Username:</string>
+    <string name="text_lastname">Last Name:</string>
+    <string name="text_birthday">Birthday:</string>
+    <string name="textview_changepwd">Change Password</string>
+    <string name="text_firstname">Fristname:</string>
+    <string name="title_activity_activity_user_settings">User Settings</string>
+    <string name="user_settings_header">User Account</string>
 </resources>
