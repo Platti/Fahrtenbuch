@@ -107,4 +107,7 @@
     <string name="birth">Birthday</string>
     <string name="register">Register</string>
     <string name="mil_wrong">Wrong mileage!</string>
+    <string name="car_settings">Car Settings</string>
+    <string name="user_settings">Car Settings</string>
+    <string name="logout">Logout</string>
 </resources>
