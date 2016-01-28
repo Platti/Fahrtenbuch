@@ -327,8 +327,10 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
                 userBuilder.setTitle(R.string.dialog_title_addUser);
                 LayoutInflater inflater = this.getLayoutInflater();
                 userBuilder.setMessage(getString(R.string._dialog_text_addUser));
-                userBuilder.setView(inflater.inflate(R.layout.dialog_textfield, null));
-
+                View dialogView = inflater.inflate(R.layout.dialog_textfield, null);
+                userBuilder.setView(dialogView);
+                EditText et = (EditText) dialogView.findViewById(R.id.dialog_textfield);
+                et.setHint(R.string.username);
                 userBuilder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -337,8 +339,8 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
                         mLoadingDialog.setCanceledOnTouchOutside(false);
                         mLoadingDialog.setMessage(getString(R.string.try_user));
                         mLoadingDialog.show();
-                        mTextFieldUser = (EditText) ((Dialog) dialogInterface).findViewById(R.id.dialog_textfield_username);
-                        if(mTextFieldUser != null) {
+                        mTextFieldUser = (EditText) ((Dialog) dialogInterface).findViewById(R.id.dialog_textfield);
+                        if (mTextFieldUser != null) {
                             App.database.linkDriverToCar(mTextFieldUser.getText().toString(), mNewCar.getLicensePlate(), new SaveCallback() {
                                 @Override
                                 public void done(ParseException e) {

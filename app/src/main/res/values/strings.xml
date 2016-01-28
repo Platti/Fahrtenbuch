@@ -92,7 +92,7 @@
     <string name="try_user">Try to add user…</string>
     <string name="error_input">Error: no input.</string>
     <string name="add_usr">"Add user "</string>
-    <string name="success"> "successfully"</string>
+    <string name="success">" successfully"</string>
     <string name="del">Delete</string>
     <string name="del_usr">Delete user</string>
     <string name="del_usr_sure">Do you really want to delete the user?</string>
@@ -108,7 +108,7 @@
     <string name="register">Register</string>
     <string name="mil_wrong">Wrong mileage!</string>
     <string name="car_settings">Car Settings</string>
-    <string name="user_settings">Car Settings</string>
+    <string name="user_settings">User Settings</string>
     <string name="logout">Logout</string>
     <string name="text_username">Username:</string>
     <string name="text_lastname">Last Name:</string>

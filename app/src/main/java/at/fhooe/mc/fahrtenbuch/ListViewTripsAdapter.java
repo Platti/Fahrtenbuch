@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.parse.ParseGeoPoint;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -61,15 +62,15 @@ public class ListViewTripsAdapter extends ArrayAdapter<Trip> {
         final Trip trip = getItem(_pos);
 
         TextView tv = (TextView) _view.findViewById(R.id.trip_date);
-        tv.setText(trip.getCreatedAt().toLocaleString().split(" ")[0]); // TODO: change to startTime date
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
+        String s = df.format(trip.getStartTime());
+        tv.setText(s);
 
         tv = (TextView) _view.findViewById(R.id.trip_driver);
         tv.setText(trip.getDriver());
 
         tv = (TextView) _view.findViewById(R.id.trip_distance);
-        String s = String.valueOf(trip.getDistance()) + mActivity.getString(R.string.kilometer_short);
-        Log.i("Fahrtenbuch", String.valueOf(trip.getDistance()) + "Kilometer?");
-        Log.i("Fahrtenbuch", mActivity.getString(R.string.kilometer_short));
+        s = String.valueOf(trip.getDistance()) + mActivity.getString(R.string.kilometer_short);
         tv.setText(s);
 
 

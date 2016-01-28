@@ -2,13 +2,17 @@ package at.fhooe.mc.fahrtenbuch;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.Layout;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,8 +38,10 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.SaveCallback;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import at.fhooe.mc.fahrtenbuch.database.Weather;
 import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
@@ -71,6 +77,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
                     .addApi(LocationServices.API)
                     .build();
         }
+
     }
 
     private void fillTextViews(){
@@ -90,6 +97,12 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_trip_details, menu);
+        MenuItem mi = (MenuItem) menu.findItem(R.id.action_edit);
+        if(!App.driver.getUsername().equals(App.car.getAdmin())){
+            mi.setVisible(false);
+        } else {
+            mi.setVisible(true);
+        }
         return true;
     }
 
@@ -98,28 +111,90 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        Intent i = null;
+        switch (id){
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            case R.id.action_logout:
+                App.driver = null;
+                // Delete last login in shared preferences
+                SharedPreferences sp = getSharedPreferences(App.SHARED_PREFERENCES, MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString(App.SP_LAST_LOGIN_USERNAME, null);
+                editor.putString(App.SP_LAST_LOGIN_PASSWORD, null);
+                editor.commit();
+                // close activity and show login activity
+                i = new Intent(TripDetailsActivity.this, LoginActivity.class);
+                startActivity(i);
+                finish();
+                break;
+            case R.id.action_user_settings:
+                i = new Intent(TripDetailsActivity.this, UserSettingsActivity.class);
+                startActivity(i);
+                break;
+            case R.id.action_car_settings:
+                i = new Intent(TripDetailsActivity.this, CarAddActivity.class);
+                startActivity(i);
+                break;
+            case R.id.action_edit:
+                if(App.car.isAdmin(App.driver)){
+                    openEditDialog();
+                } else {
+                    Toast.makeText(this, getString(R.id.info_need_to_be_admin), Toast.LENGTH_LONG).show();
+                }
+                break;
 
+
+        }
 
         return super.onOptionsItemSelected(item);
     }
 
     private void openEditDialog() {
 
-        final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialog_edit_trip);
-        dialog.setTitle(getString(R.string.edit_trip) + mTrip.getStartTime().toLocaleString().split(" ")[0]);
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
+        String s = df.format(mTrip.getStartTime());
 
-        final EditText etDistance = (EditText) dialog.findViewById(R.id.edit_trip_distance);
+        AlertDialog.Builder editBuilder = new AlertDialog.Builder(this);
+        editBuilder.setTitle(getString(R.string.edit_trip) + s);
+        editBuilder.setMessage("HelloWorld");
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_edit_trip, null);
+        editBuilder.setView(dialogView);
+        final EditText etDistance = (EditText) dialogView.findViewById(R.id.edit_trip_distance);
         etDistance.setText(String.valueOf(mTrip.getDistance()));
-        final EditText etWeather = (EditText) dialog.findViewById(R.id.edit_trip_weather);
+        final EditText etWeather = (EditText) dialogView.findViewById(R.id.edit_trip_weather);
         etWeather.setText(mTrip.getWeather().getDescription());
-        final EditText etDescription = (EditText) dialog.findViewById(R.id.edit_trip_description);
+        final EditText etDescription = (EditText) dialogView.findViewById(R.id.edit_trip_description);
         etDescription.setText(mTrip.getDescription());
 
-        Button b = (Button) dialog.findViewById(R.id.edit_trip_save);
-        b.setOnClickListener(new View.OnClickListener() {
+//        LayoutInflater inflater = this.getLayoutInflater();
+//        editBuilder.setMessage(R.string.distance);
+//        View dialogView = inflater.inflate(R.layout.dialog_textfield, null);
+//        editBuilder.setView(dialogView);
+//        final EditText etDistance = (EditText) dialogView.findViewById(R.id.dialog_textfield);
+//        etDistance.setText(String.valueOf(mTrip.getDistance()));
+//
+//        inflater = this.getLayoutInflater();
+//        editBuilder.setMessage(R.string.weather);
+//        dialogView = inflater.inflate(R.layout.dialog_textfield, null);
+//        editBuilder.setView(dialogView);
+//        final EditText etWeather = (EditText) dialogView.findViewById(R.id.dialog_textfield);
+//        etWeather.setText(mTrip.getWeather().getDescription());
+//
+//        inflater = this.getLayoutInflater();
+//        editBuilder.setMessage(R.string.description);
+//        dialogView = inflater.inflate(R.layout.dialog_textfield, null);
+//        editBuilder.setView(dialogView);
+//        final EditText etDescription = (EditText) dialogView.findViewById(R.id.dialog_textfield);
+//        etDescription.setText(mTrip.getDescription());
+
+
+        editBuilder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(DialogInterface dialogInterface, int i) {
+
                 mTrip.setDistance(Integer.parseInt(etDistance.getText().toString()));
                 mTrip.setWeather(etWeather.getText().toString());
                 mTrip.setDescription(etDescription.getText().toString());
@@ -127,21 +202,18 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
                     @Override
                     public void done(ParseException e) {
                         fillTextViews();
-                        dialog.dismiss();
                     }
                 });
             }
         });
-
-        b = (Button) dialog.findViewById(R.id.edit_trip_cancel);
-        b.setOnClickListener(new View.OnClickListener() {
+        editBuilder.setNegativeButton(R.string.dialog_cancle_button, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                dialog.dismiss();
+            public void onClick(DialogInterface dialogInterface, int i) {
             }
         });
 
-        dialog.show();
+        editBuilder.create().show();
+
     }
 
     @Override

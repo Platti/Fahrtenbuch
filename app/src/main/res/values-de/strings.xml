@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Fahrtenbuch</string>
     <string name="_dialog_text_addUser">Geben Sie den Benutzernamen an, um dem Benutzer die Berechtigung für dieses Auto zu erteilen.</string>
-    <string name="add_usr">Benutzer hinzufügen</string>
+    <string name="add_usr">Benutzer hinzufügen </string>
     <string name="action_settings">Einstellungen</string>
     <string name="birth">Geburtstag</string>
     <string name="dialog_cancle_button">Abbrechen</string>
@@ -43,7 +43,7 @@
     <string name="saving_failed">"Speichern fehlgeschlagen: "</string>
     <string name="start_text">Start</string>
     <string name="stop_text">Stopp</string>
-    <string name="success">erfolgreich</string>
+    <string name="success"> erfolgreich</string>
     <string name="textfield_kilometer">Derzeitiger Kilometerstand</string>
     <string name="textfield_make">Marke</string>
     <string name="textfield_modell">Modell</string>

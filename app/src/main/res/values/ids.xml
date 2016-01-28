@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="info_need_to_be_admin" type="id">Only the admin is allowed to edit trips!</item>
+</resources>
