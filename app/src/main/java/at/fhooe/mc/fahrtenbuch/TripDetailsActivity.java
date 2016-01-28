@@ -3,6 +3,8 @@ package at.fhooe.mc.fahrtenbuch;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.InputType;
@@ -91,23 +93,47 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         return true;
     }
 
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        Intent i = null;
+        switch (id){
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            case R.id.action_logout:
+                App.driver = null;
+                // Delete last login in shared preferences
+                SharedPreferences sp = getSharedPreferences(App.SHARED_PREFERENCES, MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString(App.SP_LAST_LOGIN_USERNAME, null);
+                editor.putString(App.SP_LAST_LOGIN_PASSWORD, null);
+                editor.commit();
+                // close activity and show login activity
+                i = new Intent(TripDetailsActivity.this, LoginActivity.class);
+                startActivity(i);
+                finish();
+                break;
+            case R.id.action_user_settings:
+                i = new Intent(TripDetailsActivity.this, UserSettingsActivity.class);
+                startActivity(i);
+                break;
+            case R.id.action_car_settings:
+                i = new Intent(TripDetailsActivity.this, CarAddActivity.class);
+                startActivity(i);
+                break;
+            case R.id.action_edit:
+                if(App.car.isAdmin(App.driver)){
+                    openEditDialog();
+                } else {
+                    Toast.makeText(this, "Only the admin is allowed to edit trips!", Toast.LENGTH_LONG).show();
+                }
+                break;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_edit) {
-            if(App.car.isAdmin(App.driver)){
-                openEditDialog();
-            } else {
-                Toast.makeText(this, "Only the admin is allowed to edit trips!", Toast.LENGTH_LONG).show();
-            }
-            return true;
+
         }
-
         return super.onOptionsItemSelected(item);
     }
 

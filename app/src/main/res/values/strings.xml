@@ -63,4 +63,15 @@
     <string name="an_overview_of_the_trips_of_the_car">An overview of the trips of the car</string>
     <string name="is_attached_to_this_mail">is attached to this mail!</string>
     <string name="title_activity_car_settings">Car settings</string>
+    <string name="title_activity_activity_user_settings">User Settings</string>
+    <string name="user_settings">User Settings</string>
+    <string name="button_change_pwd">Change Password</string>
+    <string name="user_settings_header">User Account</string>
+    <string name="password">Password</string>
+    <string name="text_username">Username: </string>
+    <string name="text_firstname">First Name:</string>
+    <string name="text_lastname">Last Name:</string>
+    <string name="text_birthday">Birthday:</string>
+    <string name="textview_changepwd">Change Password</string>
+    <string name="car_settings">Car Settings</string>
 </resources>

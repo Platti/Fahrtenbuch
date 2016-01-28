@@ -1,32 +1,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="at.fhooe.mc.fahrtenbuch.TripsOverviewActivity">
-    <item
-        android:id="@+id/action_export"
-        android:icon="@drawable/ic_action_action_get_app"
-        android:title="@string/action_export"
-        android:orderInCategory="100"
-        app:showAsAction="withText|always" />
+    tools:context="at.fhooe.mc.fahrtenbuch.CarsOverviewActivity">
 
     <item
         android:id="@+id/action_logout"
         android:title="Logout"
         android:orderInCategory="100"
         android:icon="@drawable/ic_action_action_exit_to_app"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom|withText" />
 
     <item
         android:id="@+id/action_user_settings"
         android:title="@string/user_settings"
         android:orderInCategory="100"
         android:icon="@drawable/ic_action_image_timer_auto_white"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom|withText" />
 
     <item
         android:id="@+id/action_car_settings"
         android:title="@string/car_settings"
         android:orderInCategory="100"
         android:icon="@drawable/ic_action_action_settings_white"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom|withText" />
 </menu>

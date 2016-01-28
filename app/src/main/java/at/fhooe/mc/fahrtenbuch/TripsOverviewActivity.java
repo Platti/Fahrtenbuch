@@ -2,6 +2,7 @@ package at.fhooe.mc.fahrtenbuch;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -41,7 +42,7 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trips_overview);
 
-        setTitle(App.car.toString());
+        setTitle(App.car.getMake() + " " + App.car.getModel());
 
         mLoadingStatus = 0;
 
@@ -81,52 +82,74 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
         getMenuInflater().inflate(R.menu.menu_trips_overview, menu);
         return true;
     }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        Intent i = null;
+        switch (id){
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            case R.id.action_logout:
+                App.driver = null;
+                // Delete last login in shared preferences
+                SharedPreferences sp = getSharedPreferences(App.SHARED_PREFERENCES, MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString(App.SP_LAST_LOGIN_USERNAME, null);
+                editor.putString(App.SP_LAST_LOGIN_PASSWORD, null);
+                editor.commit();
+                // close activity and show login activity
+                i = new Intent(TripsOverviewActivity.this, LoginActivity.class);
+                startActivity(i);
+                finish();
+                break;
+            case R.id.action_user_settings:
+                i = new Intent(TripsOverviewActivity.this, UserSettingsActivity.class);
+                startActivity(i);
+                break;
+            case R.id.action_car_settings:
+                i = new Intent(TripsOverviewActivity.this, CarAddActivity.class);
+                startActivity(i);
+                break;
+            case R.id.action_export:
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_export) {
+                mLoadingDialog = new ProgressDialog(TripsOverviewActivity.this, R.style.Base_Theme_AppCompat_Dialog);
+                mLoadingDialog.setIndeterminate(true);
+                mLoadingDialog.setCanceledOnTouchOutside(false);
+                mLoadingDialog.setMessage(getString(R.string.exporting));
+                mLoadingDialog.show();
 
-            mLoadingDialog = new ProgressDialog(TripsOverviewActivity.this, R.style.Base_Theme_AppCompat_Dialog);
-            mLoadingDialog.setIndeterminate(true);
-            mLoadingDialog.setCanceledOnTouchOutside(false);
-            mLoadingDialog.setMessage(getString(R.string.exporting));
-            mLoadingDialog.show();
-
-            exportTripsToCSV(new Callback() {
-                @Override
-                public void done(Exception e) {
-                    mLoadingDialog.dismiss();
-                    if (e == null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getBaseContext(), getString(R.string.exporting_successful), Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                exportTripsToCSV(new Callback() {
+                    @Override
+                    public void done(Exception e) {
+                        mLoadingDialog.dismiss();
+                        if (e == null) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), getString(R.string.exporting_successful), Toast.LENGTH_SHORT).show();
+                                }
+                            });
 
 
 
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getBaseContext(), getString(R.string.exporting_failed), Toast.LENGTH_LONG).show();
-                            }
-                        });
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), getString(R.string.exporting_failed), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
                     }
-                }
-            });
-
+                });
+                break;
         }
-
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public void onItemClick(AdapterView<?> _parent, View _view, int _position, long _id) {
