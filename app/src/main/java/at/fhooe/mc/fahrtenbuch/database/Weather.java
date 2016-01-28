@@ -1,36 +1,50 @@
 package at.fhooe.mc.fahrtenbuch.database;
 
-
-import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
 
 import com.parse.ParseGeoPoint;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import at.fhooe.mc.fahrtenbuch.R;
 
+/**
+ * container class for information about weather
+ */
 public class Weather {
+    /**
+     * icon code (OpenWeatherMap)
+     */
     private String code;
+
+    /**
+     * description
+     */
     private String description;
 
+    /**
+     * constructor
+     *
+     * @param _code        icon code
+     * @param _description description
+     */
     public Weather(String _code, String _description) {
         code = _code;
         description = _description;
     }
 
+    /**
+     * get drawable id from the icon code of this object
+     *
+     * @return drawable id
+     */
     public int getIconID() {
-
         switch (code.substring(0, 2)) {
             case "01":
                 return R.drawable.weather_clear;
@@ -55,17 +69,35 @@ public class Weather {
         }
     }
 
+    /**
+     * weather description
+     *
+     * @return weather description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * icon code
+     *
+     * @return icon code
+     */
     public String getCode() {
         return code;
     }
 
-    //    private static final String OPEN_WEATHER_MAP_API = "http://api.openweathermap.org/data/2.5/weather?q=%s&units=metric";
+    /**
+     * template for api request
+     */
     private static final String OPEN_WEATHER_MAP_API = "http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&units=metric";
 
+    /**
+     * get current weather asynchronous
+     *
+     * @param geoPoint coordinates of the city
+     * @param callback method to handle the result
+     */
     public static void get(final ParseGeoPoint geoPoint, final Weather.Callback callback) {
 
         AsyncTask task = new AsyncTask() {
@@ -82,7 +114,7 @@ public class Weather {
 
                     StringBuffer json = new StringBuffer(1024);
                     String tmp = "";
-                    while ((tmp = reader.readLine()) != null){
+                    while ((tmp = reader.readLine()) != null) {
                         json.append(tmp).append("\n");
                     }
                     reader.close();
@@ -111,6 +143,10 @@ public class Weather {
         task.execute();
     }
 
+
+    /**
+     * callback interface for weather requests
+     */
     public interface Callback {
         public void done(Weather weather, Exception e);
     }

@@ -12,16 +12,49 @@ import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
 
 public class App extends Application {
 
+    /**
+     * Tag of the shared preferences
+     */
     public static final String SHARED_PREFERENCES = "at.fhooe.mc.fahrtenbuch";
+
+    /**
+     * Tag of the last logged in username in the shared preferences
+     */
     public static final String SP_LAST_LOGIN_USERNAME = "at.fhooe.mc.fahrtenbuch.username";
+
+    /**
+     * Tag of the last logged in encrypted password in the shared preferences
+     */
     public static final String SP_LAST_LOGIN_PASSWORD = "at.fhooe.mc.fahrtenbuch.password";
+
+    /**
+     * global variable of the database connection
+     */
     public static Connection database;
+
+    /**
+     * global variable of the logged in driver
+     */
     public static Driver driver;
+
+    /**
+     * global variable of the chosen car
+     */
     public static Car car;
+
+    /**
+     * global variable of the chosen trip
+     */
     public static Trip trip;
+
+    /**
+     * global variable of the last read nfc tag
+     */
     public static String nfcId;
 
-
+    /**
+     * initialize database connection
+     */
     @Override
     public void onCreate() {
         super.onCreate();

@@ -22,6 +22,12 @@ import at.fhooe.mc.fahrtenbuch.database.MD5;
 import at.fhooe.mc.fahrtenbuch.database.Weather;
 
 public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
+    /**
+     * register database object classes
+     * initialize the connection to the database
+     *
+     * @param app the application
+     */
     @Override
     public void init(Application app) {
         try {
@@ -37,6 +43,9 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
         }
     }
 
+    /**
+     * method to test various things on the database
+     */
     @Override
     public void test() {
         final String TAG = "TestingDatabase";
@@ -179,7 +188,7 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
         linkDriverToCar("jondoe", "FR-TEST3", new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if(e==null){
+                if (e == null) {
                     Log.e(TAG, "No exception!");
                 } else {
                     e.printStackTrace();
@@ -196,6 +205,7 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
      * @param password password
      * @return Driver object, null if not found
      */
+    @Deprecated
     @Override
     public Driver loginUser(String username, String password) {
         ParseQuery<Driver> query = ParseQuery.getQuery(Driver.class);
@@ -230,6 +240,7 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
      * @param driver driver
      * @return list of all cars linked to the driver
      */
+    @Deprecated
     @Override
     public List<Car> getCars(Driver driver) {
         ParseQuery<DriverCarMapping> queryMapping = ParseQuery.getQuery(DriverCarMapping.class);
@@ -283,6 +294,7 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
      * @param car car
      * @return List with all trips of the car
      */
+    @Deprecated
     @Override
     public List<Trip> getTrips(Car car) {
         ParseQuery<Trip> query = ParseQuery.getQuery(Trip.class);
@@ -313,6 +325,7 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
      * @param trip new trip
      * @return true ok, false error
      */
+    @Deprecated
     @Override
     public boolean store(Trip trip) {
         try {
@@ -330,6 +343,7 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
      * @param trip     new trip
      * @param callback callback method to handle the result
      */
+    @Deprecated
     @Override
     public void store(Trip trip, SaveCallback callback) {
         trip.saveInBackground(callback);
@@ -341,6 +355,7 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
      * @param driver new user
      * @return true ok, false error
      */
+    @Deprecated
     @Override
     public boolean registerUser(Driver driver) {
         ParseQuery<Driver> query = ParseQuery.getQuery(Driver.class);
@@ -506,6 +521,13 @@ public class Connection implements at.fhooe.mc.fahrtenbuch.database.Connection {
         });
     }
 
+    /**
+     * Delete mapping of a driver to a car (should not delete mapping of admin of the car!)
+     *
+     * @param driver   username of the driver
+     * @param car      license plate of the car
+     * @param callback method to handle the result
+     */
     @Override
     public void deleteMapping(String driver, String car, final DeleteCallback callback) {
         ParseQuery<DriverCarMapping> queryMapping = ParseQuery.getQuery(DriverCarMapping.class);
