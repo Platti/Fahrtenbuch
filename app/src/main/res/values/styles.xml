@@ -51,6 +51,7 @@
     </style>
 
 
+    <color name="black">#000000</color>
     <color name="color_main">#00897B</color>
     <color name="color_accent">#004D40</color>
     <color name="white">#ffffff</color>

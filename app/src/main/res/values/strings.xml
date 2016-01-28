@@ -117,4 +117,10 @@
     <string name="text_firstname">Fristname:</string>
     <string name="title_activity_activity_user_settings">User Settings</string>
     <string name="user_settings_header">User Account</string>
+    <string name="user_change">Change user successfully</string>
+    <string name="change_pwd">Change Password</string>
+    <string name="current_pwd_text">Enter current password:</string>
+    <string name="current_pwd">current password:</string>
+    <string name="wrong_password">Wrong password</string>
+    <string name="change_pwd_text">Enter new password</string>
 </resources>
