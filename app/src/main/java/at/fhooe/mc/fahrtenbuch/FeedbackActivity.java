@@ -108,18 +108,17 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
                 mTrip.setFeedback(selected);
 
                 TextView description = (TextView)findViewById(R.id.textView_description);
+                TextView mileageText = (TextView)findViewById(R.id.textView_mileageFeed);
 
                 if (description.getText().toString().equals("")) {
                     Toast.makeText(FeedbackActivity.this, R.string.ins_description, Toast.LENGTH_SHORT).show();
                 } else if (selected == -1) {
                     Toast.makeText(FeedbackActivity.this, R.string.cho_feedback, Toast.LENGTH_SHORT).show();
+
+                } else if (App.car.getMileage() > Integer.valueOf(String.valueOf(mileageText.getText()))) {
+                    Toast.makeText(FeedbackActivity.this, R.string.mil_wrong, Toast.LENGTH_SHORT).show();
                 } else {
-
-                    TextView mileageText = (TextView)findViewById(R.id.textView_mileageFeed);
-
-                    if (!(String.valueOf(App.car.getMileage() + mTrip.getDistance()).equals(mileageText.getText()))) {
-                        App.car.setMileage(Integer.valueOf(String.valueOf(mileageText.getText())));
-                    }
+                    App.car.setMileage(Integer.valueOf(String.valueOf(mileageText.getText())));
 
                     mTrip.setDescription(String.valueOf(description.getText()));
 
