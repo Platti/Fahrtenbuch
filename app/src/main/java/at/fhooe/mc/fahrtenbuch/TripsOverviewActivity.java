@@ -193,7 +193,7 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
                         strArray[2] = adapter.getItem(i).getFirstCity(getBaseContext());
                         strArray[3] = adapter.getItem(i).getStopTime().toLocaleString().split(" ")[1];
                         strArray[4] = adapter.getItem(i).getLastCity(getBaseContext());
-                        strArray[5] = adapter.getItem(i).getDistance() + " km";
+                        strArray[5] = adapter.getItem(i).getDistance() + getString(R.string.kilometer_short);
                         strArray[6] = adapter.getItem(i).getDriver();
                         strArray[7] = adapter.getItem(i).getDescription();
 

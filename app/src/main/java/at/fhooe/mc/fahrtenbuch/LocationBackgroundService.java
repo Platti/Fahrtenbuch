@@ -3,21 +3,17 @@ package at.fhooe.mc.fahrtenbuch;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.GoogleMap;
 
 public class LocationBackgroundService extends Service implements com.google.android.gms.location.LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
-    private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private LocationRequest mLocationRequest;
@@ -56,7 +52,6 @@ public class LocationBackgroundService extends Service implements com.google.and
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         return null;
     }
 

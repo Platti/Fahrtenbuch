@@ -50,31 +50,31 @@ public class ListViewUserAdapter extends ArrayAdapter<Driver> {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder alertbox = new AlertDialog.Builder(mActivity);
-                alertbox.setTitle("Delete user");
-                alertbox.setMessage("Do you really want to delete the user?");
-                alertbox.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                alertbox.setTitle(R.string.del_usr);
+                alertbox.setMessage(mActivity.getString(R.string.del_usr_sure));
+                alertbox.setPositiveButton(R.string.del, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         remove(driver);
                         final ProgressDialog mLoadingDialog = new ProgressDialog(mActivity);
                         mLoadingDialog.setIndeterminate(true);
                         mLoadingDialog.setCanceledOnTouchOutside(false);
-                        mLoadingDialog.setMessage("Deleting...");
+                        mLoadingDialog.setMessage(mActivity.getString(R.string.del_dots));
                         mLoadingDialog.show();
                         App.database.deleteMapping(driver.getUsername(), App.car.getLicensePlate(), new DeleteCallback() {
                             @Override
                             public void done(ParseException e) {
                                mLoadingDialog.dismiss();
                                 if(e == null){
-                                    Toast.makeText(mActivity, "User deleted successfully", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(mActivity, mActivity.getString(R.string.del_usr_success), Toast.LENGTH_LONG).show();
                                 } else {
-                                    Toast.makeText(mActivity, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    Toast.makeText(mActivity, mActivity.getString(R.string.error_dots) + e.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
                     }
                 });
-                alertbox.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                alertbox.setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
