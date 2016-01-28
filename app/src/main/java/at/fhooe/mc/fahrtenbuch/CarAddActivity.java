@@ -195,7 +195,7 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
             mLoadingDialog = new ProgressDialog(CarAddActivity.this);
             mLoadingDialog.setIndeterminate(true);
             mLoadingDialog.setCanceledOnTouchOutside(false);
-            mLoadingDialog.setMessage("Saving...");
+            mLoadingDialog.setMessage(String.valueOf(R.string.saving));
             mLoadingDialog.show();
             if(App.car == null) {
                 App.database.addCar(mNewCar, new SaveCallback() {
@@ -206,7 +206,7 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(getBaseContext(), "New care saved in database", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getBaseContext(), R.string.new_car_saved, Toast.LENGTH_LONG).show();
                                 }
                             });
                             App.car = mNewCar;
@@ -217,7 +217,7 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(getBaseContext(), "Saving failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getBaseContext(), R.string.saving_failed + e.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
@@ -237,7 +237,7 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(getBaseContext(), "Saving failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getBaseContext(), R.string.saving_failed + e.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
@@ -276,9 +276,9 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
                 if (!mAdapter.isEnabled()) {
 
                     AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
-                    alertbox.setTitle("Info");
+                    alertbox.setTitle(R.string.info);
                     alertbox.setMessage(getString(R.string.msg_nfcon));
-                    alertbox.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
+                    alertbox.setPositiveButton(R.string.turn_on, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -290,7 +290,7 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
                             }
                         }
                     });
-                    alertbox.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                    alertbox.setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -335,7 +335,7 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
                         mLoadingDialog = new ProgressDialog(CarAddActivity.this);
                         mLoadingDialog.setIndeterminate(true);
                         mLoadingDialog.setCanceledOnTouchOutside(false);
-                        mLoadingDialog.setMessage("Try to add user...");
+                        mLoadingDialog.setMessage(String.valueOf(R.string.try_user));
                         mLoadingDialog.show();
                         mTextFieldUser = (EditText) ((Dialog) dialogInterface).findViewById(R.id.dialog_textfield_username);
                         if(mTextFieldUser != null) {
@@ -345,15 +345,15 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
                                     mLoadingDialog.dismiss();
                                     if (e == null) {
                                         initUserList();
-                                        Toast.makeText(CarAddActivity.this, "add user " + mTextFieldUser.getText().toString() + " successfully", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(CarAddActivity.this, R.string.add_usr + mTextFieldUser.getText().toString() + R.string.success, Toast.LENGTH_LONG).show();
                                     } else {
-                                        Toast.makeText(CarAddActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                        Toast.makeText(CarAddActivity.this, R.string.error_dots + e.getMessage(), Toast.LENGTH_LONG).show();
                                     }
                                 }
                             });
                         } else {
                             mLoadingDialog.dismiss();
-                            Toast.makeText(CarAddActivity.this, "Error: no input", Toast.LENGTH_LONG).show();
+                            Toast.makeText(CarAddActivity.this, R.string.error_input, Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -433,7 +433,7 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.dialog_title_exitWithoutSaving);
         builder.setMessage(getString(R.string.dialog_text_exitWithoutSaving));
-        builder.setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.save_label, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 saveAndReturn();
