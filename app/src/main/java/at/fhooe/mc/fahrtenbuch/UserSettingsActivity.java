@@ -63,6 +63,7 @@ public class UserSettingsActivity extends ActionBarActivity implements View.OnCl
 
         mUsername = (EditText) findViewById(R.id.usersettings_username);
         mUsername.setText(App.driver.getUsername());
+        mUsername.setEnabled(false);
         mFirstName = (EditText) findViewById(R.id.usersettings_first_name);
         mFirstName.setText(App.driver.getFirstName());
         mLastName = (EditText) findViewById(R.id.usersettings_last_name);
