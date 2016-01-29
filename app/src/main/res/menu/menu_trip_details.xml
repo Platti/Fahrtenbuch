@@ -13,19 +13,19 @@
         android:title="@string/logout"
         android:orderInCategory="100"
         android:icon="@drawable/ic_action_action_exit_to_app"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom|withText" />
 
     <item
         android:id="@+id/action_user_settings"
         android:title="@string/user_settings"
         android:orderInCategory="100"
         android:icon="@drawable/ic_action_image_timer_auto_white"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom|withText" />
 
     <item
         android:id="@+id/action_car_settings"
         android:title="@string/car_settings"
         android:orderInCategory="100"
         android:icon="@drawable/ic_action_action_settings_white"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom|withText" />
 </menu>
