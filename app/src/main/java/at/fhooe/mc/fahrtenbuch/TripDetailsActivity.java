@@ -141,7 +141,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
                 if(App.car.isAdmin(App.driver)){
                     openEditDialog();
                 } else {
-                    Toast.makeText(this, getString(R.id.info_need_to_be_admin), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.only_admin), Toast.LENGTH_LONG).show();
                 }
                 break;
 
@@ -158,7 +158,6 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
 
         AlertDialog.Builder editBuilder = new AlertDialog.Builder(this);
         editBuilder.setTitle(getString(R.string.edit_trip) + s);
-        editBuilder.setMessage("HelloWorld");
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_edit_trip, null);
         editBuilder.setView(dialogView);

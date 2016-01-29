@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="at.fhooe.mc.fahrtenbuch.CarsOverviewActivity">
 
-    <item
-        android:id="@+id/action_logout"
-        android:title="Logout"
-        android:orderInCategory="100"
-        android:icon="@drawable/ic_action_action_exit_to_app"
-        app:showAsAction="ifRoom|withText" />
+    <!--<item-->
+        <!--android:id="@+id/action_logout"-->
+        <!--android:title="Logout"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:icon="@drawable/ic_action_action_exit_to_app"-->
+        <!--app:showAsAction="ifRoom|withText" />-->
 
     <item
         android:id="@+id/action_user_settings"
