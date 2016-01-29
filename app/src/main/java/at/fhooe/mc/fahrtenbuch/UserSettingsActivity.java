@@ -78,6 +78,8 @@ public class UserSettingsActivity extends ActionBarActivity implements View.OnCl
         layout.setOnClickListener(this);
 
         mDriver = App.driver;
+
+        password = mDriver.getPassword();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -180,7 +182,7 @@ public class UserSettingsActivity extends ActionBarActivity implements View.OnCl
                 }
             }
         });
-        changePwd.setNegativeButton(R.id.cancel_action, new DialogInterface.OnClickListener(){
+        changePwd.setNegativeButton(R.string.dialog_cancle_button, new DialogInterface.OnClickListener(){
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {}
         });
@@ -277,7 +279,7 @@ public class UserSettingsActivity extends ActionBarActivity implements View.OnCl
 
             mDriver.setUsername(username);
             mDriver.setFirstName(firstname);
-            mDriver.setLastName(firstname);
+            mDriver.setLastName(lastname);
 
 
             mLoadingDialog = new ProgressDialog(UserSettingsActivity.this);
