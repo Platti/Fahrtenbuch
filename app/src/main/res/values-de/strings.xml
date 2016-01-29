@@ -43,7 +43,7 @@
     <string name="saving_failed">"Speichern fehlgeschlagen: "</string>
     <string name="start_text">Start</string>
     <string name="stop_text">Stopp</string>
-    <string name="success"> erfolgreich</string>
+    <string name="success">" erfolgreich"</string>
     <string name="textfield_kilometer">Derzeitiger Kilometerstand</string>
     <string name="textfield_make">Marke</string>
     <string name="textfield_modell">Modell</string>
@@ -60,7 +60,7 @@
     <string name="try_user">Versucht neuen Benutzer hinzuzufügen</string>
     <string name="turn_on">Einschalten</string>
     <string name="username">Benutzername</string>
-    <string name="weather">Wetter:</string>
+    <string name="weather">"Wetter: "</string>
     <string name="action_export">EXPORTIEREN</string>
     <string name="an_overview_of_the_trips_of_the_car">Ein Überblick der Fahrten eines Autos</string>
     <string name="at_least_6_characters">mindestens 6 Zeichen</string>
@@ -93,7 +93,7 @@
     <string name="password_not_confirmed">Passwort wurde nicht bestätigt</string>
     <string name="password">Passwort</string>
     <string name="no_connection_to_the_server">Keine Verbindung zum Server!</string>
-    <string name="nfc_not">NFC funktioniert nicht</string>
+    <string name="nfc_not">"NFC funktioniert nicht "</string>
     <string name="nfc_activate_button">verbinde mit NFC mit Auto</string>
     <string name="new_car_saved">Neues Auto wurde in der Datenbank gespeichert</string>
     <string name="must_not_contain_spaces">darf keine Leerzeichen enthalten</string>
@@ -107,4 +107,21 @@
     <string name="title_activity_car">CarActivity</string>
     <string name="fahrtenbuch_export">Fahrtenbuch-Export:</string>
     <string name="edit">Bearbeiten</string>
+    <string name="wrong_password">Falsches Passwort</string>
+    <string name="title_activity_activity_user_settings">Benutzer Einstellungen</string>
+    <string name="textview_changepwd">Passwort ändern</string>
+    <string name="text_username">Benutzername: </string>
+    <string name="text_lastname">Nachname:</string>
+    <string name="text_firstname">Vorname:</string>
+    <string name="text_birthday">Geburtstag:</string>
+    <string name="logout">Abmelden</string>
+    <string name="mil_wrong">Falscher Kilometerstand!</string>
+    <string name="car_settings">Auto Einstellungen</string>
+    <string name="change_pwd">Passwort ändern</string>
+    <string name="change_pwd_text">Neues Passwort eingeben</string>
+    <string name="current_pwd">"derzeititges Passwort: "</string>
+    <string name="current_pwd_text">Geben Sie ihr derzeitiges Passwort ein:</string>
+    <string name="user_settings">Benutzereinstellungen</string>
+    <string name="user_settings_header"></string>
+    <string name="user_change">Benutzer wechsel erfolgreich</string>
 </resources>
