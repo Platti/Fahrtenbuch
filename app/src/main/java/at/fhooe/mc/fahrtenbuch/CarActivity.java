@@ -61,6 +61,9 @@ public class CarActivity extends ActionBarActivity implements View.OnClickListen
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_car, menu);
+        if(!App.driver.getUsername().equals(App.car.getAdmin())){
+            menu.findItem(R.id.action_car_settings).setVisible(false);
+        }
         return true;
     }
 
