@@ -25,14 +25,32 @@ import java.util.Date;
 import at.fhooe.mc.fahrtenbuch.database.MD5;
 import at.fhooe.mc.fahrtenbuch.database.parse.Driver;
 
-
+/**
+ * Activity to create a new account
+ */
 public class RegisterActivity extends ActionBarActivity implements View.OnClickListener, View.OnKeyListener {
 
+    /**
+     * result keyword for the username
+     */
     public static final String REGISTER_USERNAME = "register_username";
+
+    /**
+     * result keyword for the password
+     */
     public static final String REGISTER_PASSWORD = "register_password";
 
+    /**
+     * chosen birthday
+     */
     public Calendar mBirthday;
 
+    /**
+     * onCreate()
+     * set listeners to buttons and keys
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +66,12 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
         b.setOnClickListener(this);
     }
 
+    /**
+     * validate inputs
+     * set error for invalid inputs
+     *
+     * @return true if valid, false otherwise
+     */
     public boolean validate() {
         boolean valid = true;
 
@@ -115,11 +139,19 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
         return valid;
     }
 
+    /**
+     * show a date picker to select the birthday
+     */
     void selectBirthday() {
         DialogFragment birthdayPicker = new BirthdayPickerDialog();
         birthdayPicker.show(getFragmentManager(), "birthdayPicker");
     }
 
+    /**
+     * Button.onClick()
+     *
+     * @param _v button clicked
+     */
     @Override
     public void onClick(View _v) {
         if (_v.getId() == R.id.register_birthday) {
@@ -157,7 +189,12 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
         }
     }
 
-    Driver buildDriverObject() {
+    /**
+     * build a Driver object from the inputs
+     *
+     * @return new Driver object
+     */
+    private Driver buildDriverObject() {
         String username = ((EditText) findViewById(R.id.register_username)).getText().toString();
         String password = ((EditText) findViewById(R.id.register_password1)).getText().toString();
         String firstName = ((EditText) findViewById(R.id.register_first_name)).getText().toString();
@@ -175,6 +212,14 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
         return driver;
     }
 
+    /**
+     * listen for the "OK" key in last name to open the birthday picker
+     *
+     * @param _v       focused text field
+     * @param _keyCode pressed key
+     * @param _event   key event
+     * @return true if the listener has consumed the event, false otherwise
+     */
     @Override
     public boolean onKey(View _v, int _keyCode, KeyEvent _event) {
         if (_v.getId() == R.id.register_last_name) {

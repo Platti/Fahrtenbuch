@@ -29,14 +29,32 @@ import java.util.List;
 
 import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
 
-
+/**
+ * Activity to show all trips of a car
+ */
 public class TripsOverviewActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
+    /**
+     * number of loaded trips
+     */
     public static int mLoadingStatus;
+
+    /**
+     * ListView of the trips
+     */
     public static ListView mListView;
-    //    public static ProgressBar mLoadingSpinner;
+
+    /**
+     * Loading dialog
+     */
     public static ProgressDialog mLoadingDialog;
 
+    /**
+     * onCreate()
+     * fill ListView and show loading dialog
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +69,6 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
         mLoadingDialog.setCanceledOnTouchOutside(false);
         mLoadingDialog.setMessage(getString(R.string.loading));
         mLoadingDialog.show();
-
-//        mLoadingSpinner = (ProgressBar) findViewById(R.id.progressBar_loading_trips);
-//        mLoadingSpinner.setVisibility(View.VISIBLE);
 
         final ListView listView = (ListView) findViewById(R.id.list_view_trips);
         mListView = listView;
@@ -75,20 +90,30 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
         listView.setOnItemClickListener(this);
     }
 
-
+    /**
+     * create menu
+     *
+     * @param menu menu
+     * @return true
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_trips_overview, menu);
         return true;
     }
+
+    /**
+     * options item selected listener
+     * indicates export to a csv file
+     *
+     * @param item
+     * @return true if the listener has consumed the event, false otherwise
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         Intent i = null;
-        switch (id){
+        switch (id) {
             case android.R.id.home:
                 onBackPressed();
                 break;
@@ -134,7 +159,6 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
                             });
 
 
-
                         } else {
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -150,7 +174,14 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
         return super.onOptionsItemSelected(item);
     }
 
-
+    /**
+     * item click listener (ListView)
+     *
+     * @param _parent   ListView
+     * @param _view     list item
+     * @param _position position
+     * @param _id       id
+     */
     @Override
     public void onItemClick(AdapterView<?> _parent, View _view, int _position, long _id) {
         if (_parent.getId() == R.id.list_view_trips) {
@@ -163,6 +194,11 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
         }
     }
 
+    /**
+     * export trips to a cvs file and attach it to a mail
+     *
+     * @param callback method to handle the result
+     */
     private void exportTripsToCSV(final Callback callback) {
         AsyncTask task = new AsyncTask() {
             @Override
@@ -226,7 +262,9 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
         task.execute();
     }
 
-
+    /**
+     * callback interface (export)
+     */
     public interface Callback {
         public void done(Exception e);
     }
