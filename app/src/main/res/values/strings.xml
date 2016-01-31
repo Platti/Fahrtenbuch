@@ -26,7 +26,7 @@
     <string name="button_nfc">add NFC-tag</string>
     <string name="save_label">SAVE</string>
     <string name="action_export">EXPORT</string>
-    <string name="msg_nfcon">NFC</string>
+    <string name="msg_nfcon">Turn on NFC to connect with a car with a NFC-Tag</string>
     <string name="nfc_not">"NFC doesn\'t work "</string>
     <string name="toast_message_add_new_nfc">read NFC-tag successfully</string>
     <string name="dialog_ok_button">OK</string>
@@ -86,7 +86,7 @@
     <string name="weather">"Weather: "</string>
     <string name="feecback_dots">"Feedback: "</string>
     <string name="distance">"Distance: "</string>
-    <string name="info">Info</string>
+    <string name="info">Turn on NFC</string>
     <string name="turn_on">Turn on</string>
     <string name="close">Close</string>
     <string name="try_user">Try to add user…</string>
@@ -124,4 +124,7 @@
     <string name="wrong_password">Wrong password</string>
     <string name="change_pwd_text">Enter new password</string>
     <string name="edit">EDIT</string>
+    <string name="dialog_title_saveBeforeAddUser">Save car in database</string>
+    <string name="dialog_text_saveBeforeAddUser">Before adding a new user, you have to save the car in database</string>
+    <string name="impossible_to_add_user">impossible to add a qualified user</string>
 </resources>

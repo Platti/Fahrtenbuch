@@ -267,9 +267,118 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
 
     }
 
+    private void save(){
+        String make = mTextFieldMake.getText().toString();
+        String modell = mTextFieldModel.getText().toString();
+        String number = mTextFieldNumber.getText().toString();
+        String km = mTextFieldKilometers.getText().toString();
+
+        if(make != null && modell != null && number != null && km != null &&
+                !make.equals("") && !modell.equals("") && !number.equals("") && !km.equals("")){
+
+            mNewCar.setAdmin(App.driver);
+            mNewCar.setMake(make);
+            mNewCar.setModel(modell);
+            mNewCar.setLicensePlate(number);
+            int milage = Integer.parseInt(km);
+            mNewCar.setMileage(milage);
+            mLoadingDialog = new ProgressDialog(CarAddActivity.this);
+            mLoadingDialog.setIndeterminate(true);
+            mLoadingDialog.setCanceledOnTouchOutside(false);
+            mLoadingDialog.setMessage(getString(R.string.saving));
+            mLoadingDialog.show();
+
+                App.database.addCar(mNewCar, new SaveCallback() {
+                    @Override
+                    public void done(final ParseException e) {
+                        mLoadingDialog.dismiss();
+                        if (e == null) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), getString(R.string.new_car_saved), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            App.car = mNewCar;
+                            AlertDialog.Builder userBuilder = new AlertDialog.Builder(CarAddActivity.this);
+                            userBuilder.setTitle(R.string.dialog_title_addUser);
+                            LayoutInflater inflater = CarAddActivity.this.getLayoutInflater();
+                            userBuilder.setMessage(getString(R.string._dialog_text_addUser));
+                            View dialogView = inflater.inflate(R.layout.dialog_textfield, null);
+                            userBuilder.setView(dialogView);
+                            EditText et = (EditText) dialogView.findViewById(R.id.dialog_textfield);
+                            et.setHint(R.string.username);
+                            userBuilder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    mLoadingDialog = new ProgressDialog(CarAddActivity.this);
+                                    mLoadingDialog.setIndeterminate(true);
+                                    mLoadingDialog.setCanceledOnTouchOutside(false);
+                                    mLoadingDialog.setMessage(getString(R.string.try_user));
+                                    mLoadingDialog.show();
+                                    mTextFieldUser = (EditText) ((Dialog) dialogInterface).findViewById(R.id.dialog_textfield);
+                                    if (mTextFieldUser != null) {
+                                        App.database.linkDriverToCar(mTextFieldUser.getText().toString(), mNewCar.getLicensePlate(), new SaveCallback() {
+                                            @Override
+                                            public void done(ParseException e) {
+                                                mLoadingDialog.dismiss();
+                                                if (e == null) {
+                                                    initUserList();
+                                                    Toast.makeText(CarAddActivity.this, getString(R.string.add_usr) + mTextFieldUser.getText().toString() + getString(R.string.success), Toast.LENGTH_LONG).show();
+                                                } else {
+                                                    Toast.makeText(CarAddActivity.this, getString(R.string.error_dots) + e.getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        mLoadingDialog.dismiss();
+                                        Toast.makeText(CarAddActivity.this, getString(R.string.error_input), Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                            userBuilder.setNegativeButton(R.string.dialog_cancle_button, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                }
+                            });
+
+                            userBuilder.create().show();
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), getString(R.string.saving_failed) + e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    }
+                });
+
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.dialog_title_savaMissing);
+            builder.setMessage(getString(R.string.dialog_text_saveMissing));
+            builder.setPositiveButton(R.string.dialog_saveMissing_fillout, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.setNegativeButton(R.string.dialog_saveMissing_drop, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mNewCar = null;
+                    finish();
+                }
+            });
+            builder.show();
+        }
+    }
+
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
 
             case R.id.button_nfc:
                 mAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -321,53 +430,75 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
 
                 break;
             case R.id.action_add_new_user:
+                if (App.car == null) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle(R.string.dialog_title_saveBeforeAddUser);
+                    builder.setMessage(getString(R.string.dialog_text_saveBeforeAddUser));
 
-
-                AlertDialog.Builder userBuilder = new AlertDialog.Builder(this);
-                userBuilder.setTitle(R.string.dialog_title_addUser);
-                LayoutInflater inflater = this.getLayoutInflater();
-                userBuilder.setMessage(getString(R.string._dialog_text_addUser));
-                View dialogView = inflater.inflate(R.layout.dialog_textfield, null);
-                userBuilder.setView(dialogView);
-                EditText et = (EditText) dialogView.findViewById(R.id.dialog_textfield);
-                et.setHint(R.string.username);
-                userBuilder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        mLoadingDialog = new ProgressDialog(CarAddActivity.this);
-                        mLoadingDialog.setIndeterminate(true);
-                        mLoadingDialog.setCanceledOnTouchOutside(false);
-                        mLoadingDialog.setMessage(getString(R.string.try_user));
-                        mLoadingDialog.show();
-                        mTextFieldUser = (EditText) ((Dialog) dialogInterface).findViewById(R.id.dialog_textfield);
-                        if (mTextFieldUser != null) {
-                            App.database.linkDriverToCar(mTextFieldUser.getText().toString(), mNewCar.getLicensePlate(), new SaveCallback() {
-                                @Override
-                                public void done(ParseException e) {
-                                    mLoadingDialog.dismiss();
-                                    if (e == null) {
-                                        initUserList();
-                                        Toast.makeText(CarAddActivity.this, getString(R.string.add_usr) + mTextFieldUser.getText().toString() + getString(R.string.success), Toast.LENGTH_LONG).show();
-                                    } else {
-                                        Toast.makeText(CarAddActivity.this, getString(R.string.error_dots) + e.getMessage(), Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            });
-                        } else {
-                            mLoadingDialog.dismiss();
-                            Toast.makeText(CarAddActivity.this, getString(R.string.error_input), Toast.LENGTH_LONG).show();
+                    builder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            save();
                         }
-                    }
-                });
-                userBuilder.setNegativeButton(R.string.dialog_cancle_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    });
+                    builder.setNegativeButton(R.string.dialog_cancle_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Toast.makeText(CarAddActivity.this, R.string.impossible_to_add_user, Toast.LENGTH_LONG).show();
+                        }
+                    });
 
-                    }
-                });
+                    builder.create().show();
+                } else {
 
-                userBuilder.create().show();
+                    AlertDialog.Builder userBuilder = new AlertDialog.Builder(this);
+                    userBuilder.setTitle(R.string.dialog_title_addUser);
+                    LayoutInflater inflater = this.getLayoutInflater();
+                    userBuilder.setMessage(getString(R.string._dialog_text_addUser));
+                    View dialogView = inflater.inflate(R.layout.dialog_textfield, null);
+                    userBuilder.setView(dialogView);
+                    EditText et = (EditText) dialogView.findViewById(R.id.dialog_textfield);
+                    et.setHint(R.string.username);
+                    userBuilder.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            mLoadingDialog = new ProgressDialog(CarAddActivity.this);
+                            mLoadingDialog.setIndeterminate(true);
+                            mLoadingDialog.setCanceledOnTouchOutside(false);
+                            mLoadingDialog.setMessage(getString(R.string.try_user));
+                            mLoadingDialog.show();
+                            mTextFieldUser = (EditText) ((Dialog) dialogInterface).findViewById(R.id.dialog_textfield);
+                            if (mTextFieldUser != null) {
+                                App.database.linkDriverToCar(mTextFieldUser.getText().toString(), mNewCar.getLicensePlate(), new SaveCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        mLoadingDialog.dismiss();
+                                        if (e == null) {
+                                            initUserList();
+                                            Toast.makeText(CarAddActivity.this, getString(R.string.add_usr) + mTextFieldUser.getText().toString() + getString(R.string.success), Toast.LENGTH_LONG).show();
+                                        } else {
+                                            Toast.makeText(CarAddActivity.this, getString(R.string.error_dots) + e.getMessage(), Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });
+                            } else {
+                                mLoadingDialog.dismiss();
+                                Toast.makeText(CarAddActivity.this, getString(R.string.error_input), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                    userBuilder.setNegativeButton(R.string.dialog_cancle_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+
+                    userBuilder.create().show();
+                }
                 break;
+
+
         }
     }
 

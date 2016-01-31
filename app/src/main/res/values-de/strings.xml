@@ -28,13 +28,13 @@
     <string name="enable_gps">GPS einschalten</string>
     <string name="feedback">Bewertung</string>
     <string name="firstname">Vorname</string>
-    <string name="info">Info</string>
+    <string name="info">NFC aktivieren</string>
     <string name="ins_description">Geben Sie eine Beschreibung ein!</string>
     <string name="kilometer_short">" km"</string>
     <string name="lastname">Nachname</string>
     <string name="loading">Laden…</string>
     <string name="mileage">"Kilometerstand: "</string>
-    <string name="msg_nfcon">NFC</string>
+    <string name="msg_nfcon">Aktivieren Sie NFC, um eine Verbindung mittels NFC herzustellen.</string>
     <string name="register">Registrieren</string>
     <string name="register_new_acc">Neuen Benutzer registrieren</string>
     <string name="sav_trip">Fahrt speichern</string>
@@ -124,4 +124,7 @@
     <string name="user_settings">Benutzereinstellungen</string>
     <string name="user_settings_header"></string>
     <string name="user_change">Benutzer wechsel erfolgreich</string>
+    <string name="dialog_title_saveBeforeAddUser">Auto in Datenbank speichern</string>
+    <string name="dialog_text_saveBeforeAddUser">Um einen berechtigten Benutzer hinzuzufügen, muss das Auto zuerst in die Datenbank eingetragen werden.</string>
+    <string name="impossible_to_add_user">nicht möglich, einen neuen Benutzer hinzuzufügen</string>
 </resources>

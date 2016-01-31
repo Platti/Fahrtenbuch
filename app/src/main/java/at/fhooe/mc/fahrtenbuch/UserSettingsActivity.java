@@ -111,10 +111,9 @@ public class UserSettingsActivity extends ActionBarActivity implements View.OnCl
                 currentPwd.setTitle(R.string.change_pwd);
                 currentPwd.setMessage(getString(R.string.current_pwd_text));
                 LayoutInflater inflater = getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.dialog_textfield, null);
+                View dialogView = inflater.inflate(R.layout.dialog_password_textfield, null);
                 currentPwd.setView(dialogView);
-                mCurrentPwd = (EditText) dialogView.findViewById(R.id.dialog_textfield);
-                mCurrentPwd.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                mCurrentPwd = (EditText) dialogView.findViewById(R.id.dialog_pwd_textfield);
                 currentPwd.setPositiveButton(R.string.dialog_ok_button, new DialogInterface.OnClickListener() {
 
                     @Override
