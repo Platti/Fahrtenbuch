@@ -107,8 +107,9 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
     }
 
     /**
-     * @param menu
-     * @return
+     * creates the defined options menu
+     * @param menu menu
+     * @return boolean true, if creating was successful
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -126,8 +127,9 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
     }
 
     /**
-     * @param item
-     * @return
+     * set listener to the option menu
+     * @param item choosen item
+     * @return boolean true, if action was successful
      */
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
