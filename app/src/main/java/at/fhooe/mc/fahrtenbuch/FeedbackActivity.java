@@ -16,10 +16,26 @@ import com.parse.SaveCallback;
 
 import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
 
+/**
+ * Activity to get feedback and description for a trip
+ */
 public class FeedbackActivity extends Activity implements View.OnClickListener {
-    private int selected = -1;
+
+    /**
+     * number of the selected feedback from 1-5, -1 nothing selected
+     */
+    private int selectedFeedback = -1;
+
+    /**
+     * the trip to save and to add the feedback
+     */
     Trip mTrip = App.trip;
 
+    /**
+     * Sets the title in the actionbar, sets the onclicklistener for the feedback imagebuttons
+     * and sets the text for the mileage textView.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,11 +64,21 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
         textViewMileage.setText(String.valueOf(App.car.getMileage() + mTrip.getDistance()));
     }
 
+    /**
+     * The back button is disabled to not get bac to the maps view.
+     */
     @Override
     public void onBackPressed() {
         //disable back button
     }
 
+    /**
+     * Is called if a button is clicked.
+     * Sets the selected images for every button, sets the selectedFeedback
+     * and if the save button is clicked: checks if feedback and description is given
+     * and saves the trip with that information.
+     * @param v button that was clicked
+     */
     @Override
     public void onClick(View v) {
 
@@ -79,42 +105,42 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
             case R.id.button_smiley1: {
                 b1.setBackground(getResources().getDrawable(R.drawable.feedback_1_y));
 
-                selected = 1;
+                selectedFeedback = 1;
                 break;
             }
             case R.id.button_smiley2: {
                 b2.setBackground(getResources().getDrawable(R.drawable.feedback_2_y));
-                selected = 2;
+                selectedFeedback = 2;
                 break;
             }
             case R.id.button_smiley3: {
                 b3.setBackground(getResources().getDrawable(R.drawable.feedback_3_y));
-                selected = 3;
+                selectedFeedback = 3;
                 break;
             }
             case R.id.button_smiley4: {
                 b4.setBackground(getResources().getDrawable(R.drawable.feedback_4_y));
-                selected = 4;
+                selectedFeedback = 4;
                 break;
             }
             case R.id.button_smiley5: {
                 b5.setBackground(getResources().getDrawable(R.drawable.feedback_5_y));
 
-                selected = 5;
+                selectedFeedback = 5;
                 break;
             }
             case R.id.button_saveTrip: {
 
-                mTrip.setFeedback(selected);
+                mTrip.setFeedback(selectedFeedback);
 
                 TextView description = (TextView)findViewById(R.id.textView_description);
                 TextView mileageText = (TextView)findViewById(R.id.textView_mileageFeed);
 
+                //check if everything is given
                 if (description.getText().toString().equals("")) {
                     Toast.makeText(FeedbackActivity.this, getString(R.string.ins_description), Toast.LENGTH_SHORT).show();
-                } else if (selected == -1) {
+                } else if (selectedFeedback == -1) {
                     Toast.makeText(FeedbackActivity.this, getString(R.string.cho_feedback), Toast.LENGTH_SHORT).show();
-
                 } else if (App.car.getMileage() > Integer.valueOf(String.valueOf(mileageText.getText()))) {
                     Toast.makeText(FeedbackActivity.this, getString(R.string.mil_wrong), Toast.LENGTH_SHORT).show();
                 } else {
@@ -122,6 +148,7 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
 
                     mTrip.setDescription(String.valueOf(description.getText()));
 
+                    //save trip
                     mTrip.saveEventually(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
@@ -133,6 +160,7 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
                         }
                     });
 
+                    // save car
                     App.car.saveEventually(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
@@ -144,8 +172,6 @@ public class FeedbackActivity extends Activity implements View.OnClickListener {
                         }
                     });
 
-//                    Intent i = new Intent(FeedbackActivity.this, CarActivity.class);
-//                    startActivity(i);
                     finish();
                 }
 

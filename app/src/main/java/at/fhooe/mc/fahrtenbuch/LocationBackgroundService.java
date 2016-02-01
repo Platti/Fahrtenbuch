@@ -13,16 +13,29 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+/**
+ * Background service to get location updates also when screen is inactive or app is in background
+ */
 public class LocationBackgroundService extends Service implements com.google.android.gms.location.LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
+
+    /**
+     * The main entry point for Google Play services integration.
+     */
     private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
+
+    /**
+     * Data object with the request information
+     */
     private LocationRequest mLocationRequest;
 
-    final static String MY_ACTION = "MY_ACTION";
+    final static String LOCATION = "LOCATION";
 
     public LocationBackgroundService() {
     }
 
+    /**
+     * Initializes the googleApiClient, calls location request method and connects with the google service
+     */
     @Override
     public void onCreate() {
         super.onCreate();
@@ -37,12 +50,13 @@ public class LocationBackgroundService extends Service implements com.google.and
                     .build();
         }
 
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
         createLocationRequest();
         mGoogleApiClient.connect();
     }
 
+    /**
+     * stops the location update on destroy
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -62,24 +76,27 @@ public class LocationBackgroundService extends Service implements com.google.and
         return START_STICKY;
     }
 
+    /**
+     * When google service is connected the method starts the location update
+     * @param bundle
+     */
     @Override
     public void onConnected(Bundle bundle) {
-
         Log.d("Fahrtenbuch", "onConnected service");
-
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
-        if (mLastLocation != null) {
-            Log.v("Fahrtenbuch", "Long: " + String.valueOf(mLastLocation.getLongitude()) + " Lat: " + String.valueOf(mLastLocation.getLatitude()));
-        }
 
         startLocationUpdates();
     }
 
+    /**
+     * Starts the location update
+     */
     protected void startLocationUpdates() {
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
 
+    /**
+     * Creates location request with some parameters (updates only if the distance is higher then 35 meters or every 5 seconds).
+     */
     protected void createLocationRequest() {
         Log.d("Fahrtenbuch", "createLocationRequest service");
         mLocationRequest = new LocationRequest();
@@ -89,11 +106,16 @@ public class LocationBackgroundService extends Service implements com.google.and
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    /**
+     * Is called when the location has changed.
+     * Sends the information about the current location to mapsactivity.
+     * @param location the current location
+     */
     @Override
     public void onLocationChanged(Location location) {
         Log.d("Fahrtenbuch", "onLocationChanged service!");
         Intent intent = new Intent();
-        intent.setAction(MY_ACTION);
+        intent.setAction(LOCATION);
 
         intent.putExtra("LOCATION", location);
 
@@ -110,9 +132,11 @@ public class LocationBackgroundService extends Service implements com.google.and
 
     }
 
+    /**
+     * Stops location updates
+     */
     protected void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(
-                mGoogleApiClient, this);
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
 }

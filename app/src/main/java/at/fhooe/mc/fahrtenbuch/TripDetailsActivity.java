@@ -46,13 +46,24 @@ import java.util.Locale;
 import at.fhooe.mc.fahrtenbuch.database.Weather;
 import at.fhooe.mc.fahrtenbuch.database.parse.Trip;
 
-
+/**
+ * This activty shows the detail informations about a certain trip
+ */
 public class TripDetailsActivity extends ActionBarActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    /**
+     * The trip to go in detail
+     */
     private Trip mTrip;
-    private GoogleMap mMap;
-    private GoogleApiClient mGoogleApiClient;
-    private List<ParseGeoPoint> mPointList = new ArrayList<>();
 
+    /**
+     * The main entry point for Google Play services integration.
+     */
+    private GoogleApiClient mGoogleApiClient;
+
+    /**
+     * Sets the title to start and stop city, initializes the mapFragement
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,23 +74,24 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
 
         fillTextViews();
 
-        mPointList = mTrip.getGeoPoints();
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapDetail);
         mapFragment.getMapAsync(this);
 
-        //create an instance of googleAPIClient
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
+//        //create an instance of googleAPIClient
+//        if (mGoogleApiClient == null) {
+//            mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                    .addConnectionCallbacks(this)
+//                    .addOnConnectionFailedListener(this)
+//                    .addApi(LocationServices.API)
+//                    .build();
+//        }
 
     }
 
+    /**
+     * Fills the textViews with the detail information about driver, distance, description, weather and feedback.
+     */
     private void fillTextViews(){
         TextView driverText = (TextView) findViewById(R.id.textView_driver);
         driverText.setText(mTrip.getDriver());
@@ -93,6 +105,11 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         feedbackText.setText(String.valueOf(mTrip.getFeedback()));
     }
 
+    /**
+     *
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -106,6 +123,11 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         return true;
     }
 
+    /**
+     *
+     * @param item
+     * @return
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -144,13 +166,14 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
                     Toast.makeText(this, getString(R.string.only_admin), Toast.LENGTH_LONG).show();
                 }
                 break;
-
-
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     *
+     */
     private void openEditDialog() {
 
         SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
@@ -215,21 +238,26 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
 
     }
 
+    /**
+     * Is called when the map is ready to show information.
+     * Draws the points of the trip as a polyline in the map to show the trip.
+     * @param googleMap mapFragment to show the polyline
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         GoogleMap map = googleMap;
+        List<ParseGeoPoint> pointList;
+        pointList = mTrip.getGeoPoints();
 
-        LatLng lastPoint = new LatLng(mPointList.get(mPointList.size() - 1).getLatitude(), mPointList.get(mPointList.size() - 1).getLongitude());
+        LatLng lastPoint = new LatLng(pointList.get(pointList.size() - 1).getLatitude(), pointList.get(pointList.size() - 1).getLongitude());
 
         map.addMarker(new MarkerOptions().position(lastPoint));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(lastPoint, 10));
 
+        for (int i = 0; i < pointList.size() - 1; i++) {
+            ParseGeoPoint src = pointList.get(i);
+            ParseGeoPoint dest = pointList.get(i + 1);
 
-        for (int i = 0; i < mPointList.size() - 1; i++) {
-            ParseGeoPoint src = mPointList.get(i);
-            ParseGeoPoint dest = mPointList.get(i + 1);
-
-            // map is the Map Object
             Polyline line = map.addPolyline(
                     new PolylineOptions().add(
                             new LatLng(src.getLatitude(), src.getLongitude()),
