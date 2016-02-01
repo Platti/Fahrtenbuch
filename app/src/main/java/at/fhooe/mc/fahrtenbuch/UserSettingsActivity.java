@@ -37,21 +37,60 @@ import at.fhooe.mc.fahrtenbuch.database.parse.Driver;
 
 public class UserSettingsActivity extends ActionBarActivity implements View.OnClickListener {
 
+    /**
+     * Driver Object to store the current user locally
+     */
     Driver mDriver;
 
+    /**
+     * textfield for the username - disabled
+     */
     EditText mUsername;
+    /**
+     * editable textfield for the first name
+     */
     EditText mFirstName;
+    /**
+     * editable textfield for the last name
+     */
     EditText mLastName;
+    /**
+     * editabel textfield for the birthday
+     */
     TextView mBirthday;
+    /**
+     * Calender to choose the birthday
+     */
     Calendar mBirthdayCalendar;
+    /**
+     * editable textfields for the current password
+     */
     EditText mCurrentPwd;
+    /**
+     * editable textfield to change the password
+     */
     EditText mChangedPwd;
+    /**
+     * editable textfield to confirm the changed password
+     */
     EditText mConfirmedPwd;
 
+    /**
+     * string to strore password locally
+     */
     String password;
 
+    /**
+     * progress dialog to show the user, when something is loading
+     */
     ProgressDialog mLoadingDialog;
 
+    /**
+     * onCreate()
+     * fill editable textfields with the current data of the user
+     * set click listener to change password
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,12 +121,24 @@ public class UserSettingsActivity extends ActionBarActivity implements View.OnCl
 
         password = mDriver.getPassword();
     }
+
+    /**
+     * creates the defined options menu
+     * @param menu menu
+     * @return boolean true, if creating was successful
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_user_settings, menu);
         return true;
     }
+
+    /**
+     * set listener to the option menu
+     * @param item choosen item
+     * @return boolean true, if action was successful
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean r = true;
@@ -103,6 +154,14 @@ public class UserSettingsActivity extends ActionBarActivity implements View.OnCl
         return r;
     }
 
+    /**
+     * onclick listener
+     * 1. to change password
+     *      dialog to enter current password
+     *      if ok, dialog to enter new password and confirm it
+     * 2. to change birthday
+     * @param view choosen view, with on click listener
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -133,6 +192,9 @@ public class UserSettingsActivity extends ActionBarActivity implements View.OnCl
         }
     }
 
+    /**
+     * checks if user entered the correct password
+     */
     private void testCurrentPassword(){
         mLoadingDialog = new ProgressDialog(UserSettingsActivity.this);
         mLoadingDialog.setIndeterminate(true);
@@ -161,6 +223,9 @@ public class UserSettingsActivity extends ActionBarActivity implements View.OnCl
         });
     }
 
+    /**
+     * method to change the current password
+     */
     private void changePassword(){
         final AlertDialog.Builder changePwd = new AlertDialog.Builder(this);
         changePwd.setTitle(R.string.change_pwd);
@@ -189,6 +254,11 @@ public class UserSettingsActivity extends ActionBarActivity implements View.OnCl
         changePwd.create().show();
     }
 
+    /**
+     * methode to check if the new password is valid
+     * @return boolean true, if the password and confirm password are the same, and if it's like specified conditions
+     *              false otherwise
+     */
     public boolean validatePassword() {
         boolean valid = true;
 
@@ -211,31 +281,44 @@ public class UserSettingsActivity extends ActionBarActivity implements View.OnCl
         return valid;
     }
 
+    /**
+     * method to change birthday
+     */
     private void changeBirthday(){
         DialogFragment birthdayPicker = new BirthdayPickerDialog();
         birthdayPicker.show(getFragmentManager(), "birthdayPicker");
-        if(validBirthday()){
-            mDriver.setBirthday(mBirthdayCalendar.getTime());
-        } else {
-            SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
-            String s = df.format(App.driver.getBirthday());
-            mBirthday.setText(s);
+        if(!birthdayPicker.isVisible()) {
+            if (validBirthday()) {
+                mDriver.setBirthday(mBirthdayCalendar.getTime());
+            } else {
+                SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
+                String s = df.format(App.driver.getBirthday());
+                mBirthday.setText(s);
+            }
         }
 
     }
 
+    /**
+     * checks if entered birthday is valid
+     * @return boolean true, if it is valid (between 01.01.1900 - present-date)
+     *                  false otherwise
+     */
     private boolean validBirthday(){
         boolean valid = true;
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
+        Log.e("UserSettings", year + "/" + month + "/" + day);
         if (mBirthdayCalendar != null) {
-            Log.e("RegisterUser", mBirthdayCalendar.get(Calendar.YEAR) + "/" + mBirthdayCalendar.get(Calendar.MONTH) + "/" + mBirthdayCalendar.get(Calendar.DAY_OF_MONTH));
+            Log.e("UserSettings", mBirthdayCalendar.get(Calendar.YEAR) + "/" + mBirthdayCalendar.get(Calendar.MONTH) + "/" + mBirthdayCalendar.get(Calendar.DAY_OF_MONTH));
         }
 
+
+
         if (mBirthdayCalendar == null || Calendar.getInstance().compareTo(mBirthdayCalendar) < 0) {
-            mBirthday.setError(getString(R.string.invalid_input));
+//            Toast.makeText(getBaseContext(), R.string.impossible_birthday, Toast.LENGTH_LONG).show();
             valid = false;
         } else {
             mBirthday.setError(null);
@@ -243,10 +326,18 @@ public class UserSettingsActivity extends ActionBarActivity implements View.OnCl
         return valid;
     }
 
+    /**
+     * onBackPressed()
+     * has to save changes before return
+     */
     @Override
     public void onBackPressed() {
         saveChanges();
     }
+
+    /**
+     * method to save changes
+     */
     public void saveChanges(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -268,6 +359,9 @@ public class UserSettingsActivity extends ActionBarActivity implements View.OnCl
         builder.show();
     }
 
+    /**
+     * stores the changes in database and returns to the parent-activity
+     */
     private void saveAndReturn(){
         String username = mUsername.getText().toString();
         String firstname = mFirstName.getText().toString();

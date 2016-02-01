@@ -54,25 +54,66 @@ import at.fhooe.mc.fahrtenbuch.database.parse.DriverCarMapping;
 
 public class CarAddActivity extends ActionBarActivity implements View.OnClickListener {
 
-    Context mContext = this;
-
+    /**
+     * Car Object to store the new/changed Car locally
+     */
     public Car mNewCar;
 
+    /**
+     * textfield for the make
+     */
     EditText mTextFieldMake;
+    /**
+     * textfield for the model
+     */
     EditText mTextFieldModel;
+    /**
+     * textfield for the number plate - disabled
+     */
     EditText mTextFieldNumber;
+    /**
+     * textfield for the current kilometers
+     */
     EditText mTextFieldKilometers;
+    /**
+     * button to add NFC-Tag
+     */
     Button mNFCButton;
+    /**
+     * textview to be able to add a new user
+     */
     TextView mAddUser;
 
+    /**
+     * NFC-adapter for NFC-connection
+     */
     NfcAdapter mAdapter;
+    /**
+     * Alert Dialog to inform User to read in a nfc-tag
+     */
     AlertDialog mNfcReadInDialog;
+    /**
+     * Progress Dialog to show loading state
+     */
     ProgressDialog mLoadingDialog;
-
+    /**
+     * textfield for adding a new user with the entered username
+     */
     EditText mTextFieldUser;
 
+    /**
+     * list for the listview of driver elements
+     */
     public static List<Driver> mUserList;
 
+
+    /**
+     * onCreate()
+     * initialize the textfields
+     * sets onclick listener to button
+     * if activity is called for changing car-data, the textfillds will be filled with the current values
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,6 +170,9 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         }
     }
 
+    /**
+     * method to initialize the list of qualified users
+     */
     private void initUserList(){
         mUserList = new ArrayList<>();
         final ListView listView = (ListView) findViewById(R.id.listEnabledUser);
@@ -152,6 +196,11 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         listView.setAdapter(adapter);
     }
 
+    /**
+     * creates the defined options menu
+     * @param menu menu
+     * @return boolean true, if creating was successful
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -159,6 +208,11 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         return true;
     }
 
+    /**
+     * set listener to the option menu
+     * @param item choosen item
+     * @return boolean true, if action was successful
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -177,6 +231,9 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         return var;
     }
 
+    /**
+     * method to save the changed values and return to parent activity
+     */
     private void saveAndReturn(){
         String make = mTextFieldMake.getText().toString();
         String modell = mTextFieldModel.getText().toString();
@@ -267,6 +324,9 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
 
     }
 
+    /**
+     * stores the new car in database but doesn't return to parent activity
+     */
     private void save(){
         String make = mTextFieldMake.getText().toString();
         String modell = mTextFieldModel.getText().toString();
@@ -376,6 +436,14 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         }
     }
 
+    /**
+     * onclick listener
+     * 1. for nfc-button
+     *      to change/add an NFC-Tag-ID to a car
+     * 2. for add-user textview
+     *      to give an extern user the authorisation for the car
+     * @param view choosen view, with onclick listener
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -410,6 +478,7 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
 
                 }
                 if (mAdapter.isEnabled()) {
+
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle(R.string.dialog_title_nfcReadIn);
                     builder.setMessage(getString(R.string.dialog_text_nfcReadIn));
@@ -502,6 +571,11 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         }
     }
 
+
+    /**
+     * when new intent is recognised this method is called
+     * @param _intent intent which is recognised
+     */
     @Override
     public void onNewIntent(Intent _intent) {
         if (_intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
@@ -523,8 +597,15 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         Log.i(this.getClass().toString(), "Id: " + id + "yeayea");
     }
 
-
+    /**
+     * final constant for defining an byte array to hexadecimal string
+     */
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    /**
+     * method to convert a byte array to an hexadecimal string
+     * @param bytes byte-array from which a hexadecimal string is created
+     * @return hex string (id of NFC-Tag)
+     */
     public static String convertToHexString(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for ( int j = 0; j < bytes.length; j++ ) {
@@ -534,7 +615,10 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         }
         return new String(hexChars);
     }
-
+    /**
+     * onPause()
+     * when activity is in pause mode, the foreground dispatcher for NFC should be disabled
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -543,6 +627,10 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         }
     }
 
+    /**
+     * onResume()
+     * when activity is in pause mode, the foreground dispatcher for NFC should be disabled
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -551,16 +639,18 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
+    /**
+     * onBackPressed()
+     * has to save changes before return
+     */
     @Override
     public void onBackPressed() {
         saveChanges();
     }
 
+    /**
+     * method to save changes
+     */
     public void saveChanges(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -583,6 +673,12 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
         builder.show();
     }
 
+    /**
+     * initializes the Intent-Filter for NFC-Tags
+     * and activates the foreground dispatcher
+     * if NFC-Tag is recognised the app will be still active, because of the foreground dispacher
+     * @throws IntentFilter.MalformedMimeTypeException
+     */
     private void initForegroundDispatchMode() throws IntentFilter.MalformedMimeTypeException {
         Intent i = new Intent(this, getClass());
         i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -601,9 +697,4 @@ public class CarAddActivity extends ActionBarActivity implements View.OnClickLis
             mAdapter.enableForegroundDispatch(this, pi, filters, techList);
         }
     }
-
-    public interface Callback {
-        public void done(Exception e);
-    }
-
 }

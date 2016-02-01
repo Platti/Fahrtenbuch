@@ -100,6 +100,11 @@ public class TripsOverviewActivity extends ActionBarActivity implements AdapterV
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_trips_overview, menu);
+        if(!App.driver.getUsername().equals(App.car.getAdmin())){
+            menu.findItem(R.id.action_car_settings).setVisible(false);
+        } else {
+            menu.findItem(R.id.action_car_settings).setVisible(true);
+        }
         return true;
     }
 

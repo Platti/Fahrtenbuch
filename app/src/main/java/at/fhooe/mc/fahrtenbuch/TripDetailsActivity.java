@@ -117,8 +117,10 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         MenuItem mi = (MenuItem) menu.findItem(R.id.action_edit);
         if (!App.driver.getUsername().equals(App.car.getAdmin())) {
             mi.setVisible(false);
+            menu.findItem(R.id.action_car_settings).setVisible(false);
         } else {
             mi.setVisible(true);
+            menu.findItem(R.id.action_car_settings).setVisible(true);
         }
         return true;
     }

@@ -18,6 +18,13 @@ import at.fhooe.mc.fahrtenbuch.R;
 
 public class CarActivity extends ActionBarActivity implements View.OnClickListener {
 
+    /**
+     * onCreate()
+     * Menu for the options is created -> start ride, show ride
+     * and if driver is admin of the car -> car settings
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +63,11 @@ public class CarActivity extends ActionBarActivity implements View.OnClickListen
 
     }
 
-
+    /**
+     * creates the defined options menu
+     * @param menu menu
+     * @return boolean true, if creating was successful
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -67,6 +78,11 @@ public class CarActivity extends ActionBarActivity implements View.OnClickListen
         return true;
     }
 
+    /**
+     * set listener to the option menu
+     * @param item choosen item
+     * @return boolean true, if action was successful
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -106,6 +122,11 @@ public class CarActivity extends ActionBarActivity implements View.OnClickListen
     }
 
 
+    /**
+     * on click listener on the menu-options (start ride, show rides, car settings)
+     *
+     * @param view choosen view with onclick listener
+     */
     @Override
     public void onClick(View view) {
         Intent i;
@@ -125,12 +146,10 @@ public class CarActivity extends ActionBarActivity implements View.OnClickListen
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-    }
-
+    /**
+     * onBackPressed()
+     * sets the App.car variable to null, to get back to the CarOverViewActivity
+     */
     @Override
     public void onBackPressed() {
         App.car = null;

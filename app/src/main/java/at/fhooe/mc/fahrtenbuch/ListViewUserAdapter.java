@@ -26,12 +26,28 @@ import at.fhooe.mc.fahrtenbuch.database.parse.Driver;
  * Created by caroline on 26.01.2016.
  */
 public class ListViewUserAdapter extends ArrayAdapter<Driver> {
+
+    /**
+     * parent activity
+     */
     public Activity mActivity;
 
+    /**
+     * constructor
+     * @param context context
+     */
     public ListViewUserAdapter(Context context) {
         super(context, -1);
     }
 
+    /**
+     * create list elment of Driver with first/last name and delete-icon
+     * if icon is pressed, element will be deleted of the list
+     * @param _pos position
+     * @param _view view
+     * @param _parent parent
+     * @return new view
+     */
     @Override
     public View getView(int _pos, View _view, ViewGroup _parent) {
         if (_view == null) {

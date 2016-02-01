@@ -127,4 +127,5 @@
     <string name="dialog_title_saveBeforeAddUser">Save car in database</string>
     <string name="dialog_text_saveBeforeAddUser">Before adding a new user, you have to save the car in database</string>
     <string name="impossible_to_add_user">impossible to add a qualified user</string>
+    <string name="impossible_birthday">Birthday isn\'t in valid scope</string>
 </resources>

@@ -20,12 +20,26 @@ import at.fhooe.mc.fahrtenbuch.database.parse.Car;
  * Created by caroline on 20.01.2016.
  */
 public class ListViewCarsAdapter extends ArrayAdapter<Car> {
+    /**
+     * parent activity
+     */
     public Activity mActivity;
 
+    /**
+     * constructor
+     * @param context context
+     */
     public ListViewCarsAdapter(Context context) {
         super(context, -1);
     }
 
+    /**
+     * create list element
+     * @param _pos position
+     * @param _view view
+     * @param _parent parent
+     * @return new view
+     */
     @Override
     public View getView(int _pos, View _view, ViewGroup _parent) {
         if (_view == null) {

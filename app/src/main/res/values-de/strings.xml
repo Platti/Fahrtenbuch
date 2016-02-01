@@ -127,4 +127,5 @@
     <string name="dialog_title_saveBeforeAddUser">Auto in Datenbank speichern</string>
     <string name="dialog_text_saveBeforeAddUser">Um einen berechtigten Benutzer hinzuzufügen, muss das Auto zuerst in die Datenbank eingetragen werden.</string>
     <string name="impossible_to_add_user">nicht möglich, einen neuen Benutzer hinzuzufügen</string>
+    <string name="impossible_birthday">Geburtsdatum ist nicht im erlaubten Bereich!</string>
 </resources>

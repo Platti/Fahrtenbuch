@@ -36,13 +36,27 @@ import at.fhooe.mc.fahrtenbuch.database.parse.Car;
 
 public class CarsOverviewActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
+    /**
+     * Request code when calling CarAddActivity
+     */
     private static final int NEWCAR_REQUEST_CODE = 1;
+    /**
+     * list for the ListView of the car objects
+     */
     public static List<Car> mCarList;
-    public static ProgressDialog mLoadingDialog;
 
+    /**
+     * NFC-Adapter for NFC-connection
+     */
+    private NfcAdapter mAdapter;
 
-    NfcAdapter mAdapter;
-
+    /**
+     * onCreate()
+     * initializes the list-view of Car-Objects
+     * try to turn on NFC
+     * set onclick listener for button to add new car
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,7 +137,11 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
 
     }
 
-
+    /**
+     * creates the defined options menu
+     * @param menu menu
+     * @return boolean true, if creating was successful
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -131,6 +149,11 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
         return true;
     }
 
+    /**
+     * set listener to the option menu
+     * @param item choosen item
+     * @return boolean true, if action was successful
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -159,27 +182,16 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
                 break;
         }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_logout) {
-
-//        } else if (id == R.id.action_test1) {
-//            App.database.test();
-//        } else if (id == R.id.action_test2) {
-//            App.car = App.database.getCars(App.driver).get(0); // TODO: zum testen synchron, daher verzögerung bei click auf menu
-//
-//
-//            Intent i = new Intent(CarsOverviewActivity.this, TripsOverviewActivity.class);
-//            startActivity(i);
-//        } else if (id == R.id.action_testMap) {
-//            App.car = App.database.getCars(App.driver).get(0);
-//            Intent i = new Intent(CarsOverviewActivity.this, MapsActivity.class);
-//            startActivity(i);
-
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Click Listener for the ListView-Elements
+     * @param parent   ListView
+     * @param view   list item
+     * @param pos   position
+     * @param id    id
+     */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
         App.car = (Car) parent.getAdapter().getItem(pos);
@@ -188,12 +200,20 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
     }
 
 
+    /**
+     * when new intent is recognised this method is called
+     * @param _intent intent which is recognised
+     */
     @Override
     public void onNewIntent(Intent _intent) {
         App.car = null;
         readNFC(_intent);
     }
 
+    /**
+     * reads the given intent if it is from an NFC-Tag
+     * @param _intent recognised intent
+     */
     public void readNFC(Intent _intent) {
         if (_intent != null) {
             if (_intent.getAction() != null && (_intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED) || _intent.getAction().equals(NfcAdapter.ACTION_NDEF_DISCOVERED) || _intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED))) {
@@ -232,8 +252,16 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
         }
     }
 
+    /**
+     * final constant for defining an byte array to hexadecimal string
+     */
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
+    /**
+     * method to convert a byte array to an hexadecimal string
+     * @param bytes byte-array from which a hexadecimal string is created
+     * @return hex string (id of NFC-Tag)
+     */
     public static String convertToHexString(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
@@ -244,6 +272,10 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
         return new String(hexChars);
     }
 
+    /**
+     * onPause()
+     * when activity is in pause mode, the foreground dispatcher for NFC should be disabled
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -252,6 +284,10 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
         }
     }
 
+    /**
+     * onResume()
+     * if activity gets in front, the foreground dispatcher for NFC should be initialized
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -263,6 +299,12 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
         }
     }
 
+    /**
+     * initializes the Intent-Filter for NFC-Tags
+     * and activates the foreground dispatcher
+     * if NFC-Tag is recognised the app will be still active, because of the foreground dispacher
+     * @throws IntentFilter.MalformedMimeTypeException
+     */
     private void initForegroundDispatchMode() throws IntentFilter.MalformedMimeTypeException {
         Intent i = new Intent(this, getClass());
         i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -283,6 +325,11 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
     }
 
 
+    /**
+     * on Click Listener
+     * for the button
+     * @param view clicked element/view
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -293,6 +340,13 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
         }
     }
 
+    /**
+     * onActivityResult is called, after CarAddActivity
+     * if a new Car was added successfully the carActivity will be started for this car
+     * @param _requestCode request code (NEWCAR_REQUEST_CODE)
+     * @param _resultCode  result code (RESULT_OK)
+     * @param _data        data passed
+     */
     @Override
     protected void onActivityResult(int _requestCode, int _resultCode, Intent _data) {
         if (_requestCode == NEWCAR_REQUEST_CODE) {
@@ -303,6 +357,11 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
         }
     }
 
+    /**
+     * if NFC-Tag was recognized it has to be checked if there is any car with this nfc-id
+     * @param _id hex string of the NFC-id
+     * @return  Car-object if found, otherwise null
+     */
     private Car findCarWithNFCId(String _id) {
         if (_id != null && mCarList != null) {
             for (Car car : mCarList) {
@@ -316,16 +375,5 @@ public class CarsOverviewActivity extends ActionBarActivity implements AdapterVi
         }
         return null;
     }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
 
 }
