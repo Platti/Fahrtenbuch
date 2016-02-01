@@ -62,6 +62,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
 
     /**
      * Sets the title to start and stop city, initializes the mapFragement
+     *
      * @param savedInstanceState
      */
     @Override
@@ -92,7 +93,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
     /**
      * Fills the textViews with the detail information about driver, distance, description, weather and feedback.
      */
-    private void fillTextViews(){
+    private void fillTextViews() {
         TextView driverText = (TextView) findViewById(R.id.textView_driver);
         driverText.setText(mTrip.getDriver());
         TextView distanceText = (TextView) findViewById(R.id.textView_distance);
@@ -106,7 +107,6 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
     }
 
     /**
-     *
      * @param menu
      * @return
      */
@@ -115,7 +115,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_trip_details, menu);
         MenuItem mi = (MenuItem) menu.findItem(R.id.action_edit);
-        if(!App.driver.getUsername().equals(App.car.getAdmin())){
+        if (!App.driver.getUsername().equals(App.car.getAdmin())) {
             mi.setVisible(false);
         } else {
             mi.setVisible(true);
@@ -124,7 +124,6 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
     }
 
     /**
-     *
      * @param item
      * @return
      */
@@ -134,7 +133,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         Intent i = null;
-        switch (id){
+        switch (id) {
             case android.R.id.home:
                 onBackPressed();
                 break;
@@ -160,7 +159,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
                 startActivity(i);
                 break;
             case R.id.action_edit:
-                if(App.car.isAdmin(App.driver)){
+                if (App.car.isAdmin(App.driver)) {
                     openEditDialog();
                 } else {
                     Toast.makeText(this, getString(R.string.only_admin), Toast.LENGTH_LONG).show();
@@ -172,7 +171,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
     }
 
     /**
-     *
+     * open a dialog to edit the trip
      */
     private void openEditDialog() {
 
@@ -241,6 +240,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
     /**
      * Is called when the map is ready to show information.
      * Draws the points of the trip as a polyline in the map to show the trip.
+     *
      * @param googleMap mapFragment to show the polyline
      */
     @Override
