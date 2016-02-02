@@ -108,6 +108,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
 
     /**
      * creates the defined options menu
+     *
      * @param menu menu
      * @return boolean true, if creating was successful
      */
@@ -128,6 +129,7 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
 
     /**
      * set listener to the option menu
+     *
      * @param item choosen item
      * @return boolean true, if action was successful
      */
@@ -194,27 +196,6 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         final EditText etDescription = (EditText) dialogView.findViewById(R.id.edit_trip_description);
         etDescription.setText(mTrip.getDescription());
 
-//        LayoutInflater inflater = this.getLayoutInflater();
-//        editBuilder.setMessage(R.string.distance);
-//        View dialogView = inflater.inflate(R.layout.dialog_textfield, null);
-//        editBuilder.setView(dialogView);
-//        final EditText etDistance = (EditText) dialogView.findViewById(R.id.dialog_textfield);
-//        etDistance.setText(String.valueOf(mTrip.getDistance()));
-//
-//        inflater = this.getLayoutInflater();
-//        editBuilder.setMessage(R.string.weather);
-//        dialogView = inflater.inflate(R.layout.dialog_textfield, null);
-//        editBuilder.setView(dialogView);
-//        final EditText etWeather = (EditText) dialogView.findViewById(R.id.dialog_textfield);
-//        etWeather.setText(mTrip.getWeather().getDescription());
-//
-//        inflater = this.getLayoutInflater();
-//        editBuilder.setMessage(R.string.description);
-//        dialogView = inflater.inflate(R.layout.dialog_textfield, null);
-//        editBuilder.setView(dialogView);
-//        final EditText etDescription = (EditText) dialogView.findViewById(R.id.dialog_textfield);
-//        etDescription.setText(mTrip.getDescription());
-
 
         editBuilder.setPositiveButton(R.string.save_label, new DialogInterface.OnClickListener() {
             @Override
@@ -252,22 +233,23 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         GoogleMap map = googleMap;
         List<ParseGeoPoint> pointList;
         pointList = mTrip.getGeoPoints();
+        if (pointList.size() != 0) {
+            LatLng lastPoint = new LatLng(pointList.get(pointList.size() - 1).getLatitude(), pointList.get(pointList.size() - 1).getLongitude());
 
-        LatLng lastPoint = new LatLng(pointList.get(pointList.size() - 1).getLatitude(), pointList.get(pointList.size() - 1).getLongitude());
+            map.addMarker(new MarkerOptions().position(lastPoint));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(lastPoint, 10));
 
-        map.addMarker(new MarkerOptions().position(lastPoint));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(lastPoint, 10));
+            for (int i = 0; i < pointList.size() - 1; i++) {
+                ParseGeoPoint src = pointList.get(i);
+                ParseGeoPoint dest = pointList.get(i + 1);
 
-        for (int i = 0; i < pointList.size() - 1; i++) {
-            ParseGeoPoint src = pointList.get(i);
-            ParseGeoPoint dest = pointList.get(i + 1);
-
-            Polyline line = map.addPolyline(
-                    new PolylineOptions().add(
-                            new LatLng(src.getLatitude(), src.getLongitude()),
-                            new LatLng(dest.getLatitude(), dest.getLongitude())
-                    )
-            );
+                Polyline line = map.addPolyline(
+                        new PolylineOptions().add(
+                                new LatLng(src.getLatitude(), src.getLongitude()),
+                                new LatLng(dest.getLatitude(), dest.getLongitude())
+                        )
+                );
+            }
         }
 
 
