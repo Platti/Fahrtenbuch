@@ -78,16 +78,6 @@ public class TripDetailsActivity extends ActionBarActivity implements OnMapReady
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapDetail);
         mapFragment.getMapAsync(this);
-
-//        //create an instance of googleAPIClient
-//        if (mGoogleApiClient == null) {
-//            mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                    .addConnectionCallbacks(this)
-//                    .addOnConnectionFailedListener(this)
-//                    .addApi(LocationServices.API)
-//                    .build();
-//        }
-
     }
 
     /**
